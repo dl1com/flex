@@ -1,6 +1,8 @@
 extern crate serde_json;
 extern crate bitstream_io;
 
+mod interleaver;
+
 use std::io;
 // JSON Support
 //  use serde_json::{Value, Error};
@@ -92,6 +94,8 @@ fn get_header_frameinfo_vector(header: FlexHeaderFrameInfo) -> Vec<u8>{
 }
 
 fn main() {
+    let test_data: [u32; 8] = [0; 8];
+    let result = interleaver::interleave_codewords_1600(test_data);
 }
 
 #[cfg(test)]
