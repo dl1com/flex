@@ -4,5 +4,4 @@ version = "0.1.0"
 authors = ["chris <mail@chris007.de>"]
 
 [dependencies]
-serde_json = "1.0"
 bitstream-io = "0.6.1"
