@@ -2,6 +2,7 @@ extern crate serde_json;
 extern crate bitstream_io;
 
 mod interleaver;
+mod parity;
 
 use std::io;
 // JSON Support
