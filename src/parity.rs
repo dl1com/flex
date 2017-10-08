@@ -26,7 +26,7 @@ fn count_ones(codeword: u32) -> u32{
 
 fn set_parity(codeword: &mut u32) {
     let parity_bit = 0x80000000;
-    *codeword = *codeword ^ parity_bit;
+    *codeword = *codeword | parity_bit;
 }
 
 fn clear_parity(codeword: &mut u32) {
@@ -69,12 +69,22 @@ mod tests {
     }
 
     #[test]
-    fn test_parity_illegal_paritybit() {
+    fn test_parity_illegal_paritybit_even() {
 
         let mut test_data: u32 = 0x80000003;
         let result: bool = check_and_set_parity(&mut test_data);
 
         assert_eq!(result, false);
         assert_eq!(test_data, 0x00000003);
+    }
+
+    #[test]
+    fn test_parity_illegal_paritybit_odd() {
+
+        let mut test_data: u32 = 0x80000001;
+        let result: bool = check_and_set_parity(&mut test_data);
+
+        assert_eq!(result, true);
+        assert_eq!(test_data, 0x80000001);
     }
 }
