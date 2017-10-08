@@ -17,6 +17,7 @@ pub fn interleave_codewords_1600(input: [u32; 8]) -> [u8; 32]
 
 #[cfg(test)]
 mod tests {
+    use super::*;
 
     #[test]
     fn test_interleave_codewords_1600_all_zeroes() {
