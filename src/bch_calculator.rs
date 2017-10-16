@@ -1,4 +1,4 @@
-pub fn calculate_crc(codeword: u32) -> u32 
+pub fn apply_bch_checksum(codeword: u32) -> u32 
 {
     let mut crc = codeword;
     for i in 0..21 {
@@ -18,7 +18,7 @@ mod tests {
 
         let test_codeword: u32 = 0;
         let expected_crc = 0;
-        let result = calculate_crc(test_codeword);
+        let result = apply_bch_checksum(test_codeword);
 
         assert_eq!(result, expected_crc);
     }
@@ -28,7 +28,7 @@ mod tests {
 
         let test_codeword: u32 = 0x001FFFFF;
         let expected_crc = 0x7FFFFFFF;
-        let result = calculate_crc(test_codeword);
+        let result = apply_bch_checksum(test_codeword);
 
         assert_eq!(result, expected_crc);
     }
@@ -38,7 +38,7 @@ mod tests {
 
         let test_codeword: u32 = 0x1D40CD;
         let expected_crc: u32 = 0x1EDD40CD;
-        let result = calculate_crc(test_codeword);
+        let result = apply_bch_checksum(test_codeword);
 
         assert_eq!(result, expected_crc);
     }
@@ -48,7 +48,7 @@ mod tests {
 
         let test_codeword: u32 = 0x87523;
         let expected_crc: u32 = 0x38C87523;
-        let result = calculate_crc(test_codeword);
+        let result = apply_bch_checksum(test_codeword);
 
         assert_eq!(result, expected_crc);
     }
