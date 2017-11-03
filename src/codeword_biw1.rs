@@ -1,6 +1,4 @@
-use fourbit_checksum::apply_4bit_checksum;
-use bch_calculator::apply_bch_checksum;
-use parity::check_and_set_parity;
+use apply_checksums::apply_checksums;
 
 struct BIW1
 {
@@ -20,19 +18,10 @@ impl BIW1 {
         cw += (vector_field_start & 0x3F) << 10;
         cw += (carry_on & 0x3) << 16;
         cw += (frame_id_collapse_mark & 0x7) << 18;
-
-        let mut biw1 = BIW1 {codeword: cw};
-        biw1.apply_checksums();
+        cw = apply_checksums(cw);
+        
+        let biw1 = BIW1 {codeword: cw};
         Ok(biw1)
-    }
-
-    fn apply_checksums(&mut self)
-    {
-        let mut cw = self.codeword;
-        cw = apply_4bit_checksum(cw);
-        cw = apply_bch_checksum(cw);
-        check_and_set_parity(&mut cw);
-        self.codeword = cw;
     }
 }
 
