@@ -13,6 +13,7 @@ mod cw_biw3;
 mod cw_biw4;
 mod cw_address_short;
 mod cw_vector_alpha;
+mod cw_message_alpha_header;
 mod cw_statics;
 mod apply_bch_and_parity;
 
