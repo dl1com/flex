@@ -7,7 +7,7 @@ struct CWAddressShort {
 
 impl CWAddressShort {
     fn new(address: u32) -> Result<CWAddressShort, &'static str> {
-        if address >= 0x1 && address <= 0x1F27FF 
+        if address >= 0x8001 && address <= 0x1F27FF 
             {
                 Ok(CWAddressShort{address: address})
             }
@@ -32,8 +32,8 @@ mod tests {
 
     #[test]
     fn test_get_address_cw_short_lowest() {
-        let cw_address_short = CWAddressShort::new(0x1).unwrap();
-        assert_eq!(cw_address_short.get_codeword(), 0x96E00001)
+        let cw_address_short = CWAddressShort::new(0x8001).unwrap();
+        assert_eq!(cw_address_short.get_codeword() & 0x1FFFFF, 0x008001)
     }
 
     #[test]
