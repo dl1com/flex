@@ -58,7 +58,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_message_alpha_header() {
+    fn test_message_alpha_header_1() {
         let msg_header = CWMessageAlphaHeader::new(0x2AB,
                                                    0,
                                                    3,
@@ -69,12 +69,24 @@ mod tests {
     }
 
     #[test]
-    fn test_message_alpha_header_invalid_fragment_check() {
-        assert_eq!(CWMessageAlphaHeader::new(0x400,
+    fn test_message_alpha_header_2() {
+        let msg_header = CWMessageAlphaHeader::new(0x00,
                                                    0,
                                                    3,
-                                                   63,
-                                                   1,
-                                                   0).is_err(), true);
+                                                   23,
+                                                   0,
+                                                   0).unwrap();
+        println!("0x{:X}",msg_header.get_codeword() & 0x1FFFFF);
+        assert_eq!(msg_header.get_codeword() & 0x1FFFFF, 0x2F800);
+    }
+
+    #[test]
+    fn test_message_alpha_header_invalid_fragment_check() {
+        assert_eq!(CWMessageAlphaHeader::new(0x400,
+                                             0,
+                                             3,
+                                             63,
+                                             1,
+                                             0).is_err(), true);
     }
 }
