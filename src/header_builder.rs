@@ -27,18 +27,6 @@ struct FlexHeaderSync2 {
     c: u16,     // 16 bit speed indication
 }
 
-struct FlexHeaderFrameInfo {
-    x: u8,              // 4 bit checksum
-    cycle_number: u8,   // 4 bit cycle number (0 to 14)
-    frame_number: u8,   // 7 bit frame number (0 to 127)
-    // n reserved bit
-    r: bool,            // repeat paging indicator
-    t: u8,              // 4 bit indicator;
-                        //      r=1 Repeat format on t0-3,
-                        //      r=0 Low traffic per phase (D/C/B/A)
-    crc: u16,           // 10 bit CRC
-    p: bool             // 1 bit parity 
-}
  
 fn get_header_sync1_vector(header: FlexHeaderSync1) -> Vec<u8>{
     let mut vector: Vec<u8> = Vec::new();
@@ -66,24 +54,6 @@ fn get_header_sync2_vector(header: FlexHeaderSync2) -> Vec<u8>{
     return vector;
 }
 
-fn get_header_frameinfo_vector(header: FlexHeaderFrameInfo) -> Vec<u8>{
-    let mut vector: Vec<u8> = Vec::new();
-    {
-        let mut writer = BitWriter::<BE>::new(&mut vector);
-        writer.write(4, 0xf & header.x).unwrap();
-        writer.write(4, 0xf & header.cycle_number).unwrap();
-        writer.write(7, 0x7f & header.frame_number).unwrap();
-        writer.write_bit(false).unwrap();
-        writer.write_bit(header.r).unwrap();
-        writer.write(4, 0xf & header.t).unwrap();
-        writer.write(10, 0x3ff & header.crc).unwrap();
-        writer.write_bit(header.p).unwrap();
-        writer.into_unwritten();
-
-    }
-    return vector;
-}
-
 
 #[cfg(test)]
 mod tests {
@@ -103,23 +73,6 @@ mod tests {
                                         0x9C,0x9A,0xCF,0x1E,
                                         0x55,0x55,
                                         0x63,0x65,0x30,0xE1]);
-    }
-
-    #[test]
-    fn test_get_header_frameinfo_vector() {
-        let flex_header_frameinfo = FlexHeaderFrameInfo {
-            x: 0x1,
-            cycle_number: 0x2,
-            frame_number: 0x34,
-            r: true,
-            t: 0xF,
-            crc: 0x3FF,
-            p: true
-        };
-
-        let result = get_header_frameinfo_vector(flex_header_frameinfo);
-
-        assert_eq!(result, vec![0x12, 0x68, 0xFF, 0xFF]);
     }
 
     #[test]
