@@ -11,6 +11,7 @@ mod cw_biw2;
 mod cw_biw3;
 mod cw_biw4;
 mod cw_address_short;
+mod cw_vector_alpha;
 mod apply_bch_and_parity;
 
 fn main() {
