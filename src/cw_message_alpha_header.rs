@@ -48,7 +48,6 @@ impl Codeword for CWMessageAlphaHeader {
         cw |= self.message_number << 13;
         cw |= self.retrieval_flag << 19;
         cw |= self.mail_drop_flag << 20;
-        println!("0x{:X}",cw);
         cw = apply_bch_and_parity(cw);
         return cw;
     }
@@ -67,5 +66,15 @@ mod tests {
                                                    1,
                                                    0).unwrap();
         assert_eq!(msg_header.get_codeword() & 0x1FFFFF, 0x0FFAAB);
+    }
+
+    #[test]
+    fn test_message_alpha_header_invalid_fragment_check() {
+        assert_eq!(CWMessageAlphaHeader::new(0x400,
+                                                   0,
+                                                   3,
+                                                   63,
+                                                   1,
+                                                   0).is_err(), true);
     }
 }
