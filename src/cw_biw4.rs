@@ -21,8 +21,8 @@ impl BIW4 {
         else
         {
             let biw4 = BIW4 {
-                hour: hour & 0x1F,
-                minute: minute & 0x3F,
+                hour: hour,
+                minute: minute,
                 second: (second as f32/7.5) as u32 & 0x7};
             Ok(biw4)
         }

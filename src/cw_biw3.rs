@@ -22,9 +22,9 @@ impl BIW3 {
         else
         {
             let biw3 = BIW3 {
-                year: year & 0x1F,
-                month: month & 0xF,
-                day: day & 0x1F};
+                year: year,
+                month: month,
+                day: day};
             Ok(biw3)
         }
     }
