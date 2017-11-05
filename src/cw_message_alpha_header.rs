@@ -1,7 +1,7 @@
 use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 
-struct CWMessageAlphaHeader {
+pub struct CWMessageAlphaHeader {
     fragment_check: u32,
     message_continued_flag: u32,
     fragment_number: u32,
@@ -11,7 +11,7 @@ struct CWMessageAlphaHeader {
 }
 
 impl CWMessageAlphaHeader {
-    fn new (fragment_check: u32,
+    pub fn new (fragment_check: u32,
             message_continued_flag: u32,
             fragment_number: u32,
             message_number: u32,

@@ -15,7 +15,8 @@ mod cw_address_short;
 mod cw_vector_alpha;
 mod cw_message_alpha_header;
 mod cw_message_alpha_signature;
-mod cw_message_alpha_chars;
+mod cw_message_alpha_content;
+mod cw_message_alpha;
 mod cw_statics;
 mod apply_bch_and_parity;
 

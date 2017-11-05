@@ -1,23 +1,27 @@
 use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 
-struct CWMessageAlphaSignature {
+pub struct CWMessageAlphaSignature {
     signature: u32,
-    chars: [u8; 2]
+    chars: Vec<u8>
 }
 
 impl CWMessageAlphaSignature {
-    fn new (signature: u32,
-            chars: [u8; 2]) -> Result<CWMessageAlphaSignature, &'static str>
+    pub fn new (signature: u32,
+                chars: &[u8]) -> Result<CWMessageAlphaSignature, &'static str>
     {
+        if chars.len() != 2 {
+            return Err("Alphanumeric Message Signature: 2 chars required.");
+        }
+
         if signature <= 0x7F {
-            Ok(CWMessageAlphaSignature{
+            return Ok(CWMessageAlphaSignature{
                 signature: signature,
-                chars: chars 
-            })
+                chars: chars.to_vec()
+            });
         }
         else {
-            Err("Alphanumeric Message Signature: Invalid Parameter.")
+            return Err("Alphanumeric Message Signature: Invalid Parameter.");
         }
     }
 }
@@ -38,15 +42,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_message_alpha_signature() {
+    fn test_message_alpha_signature()   {
+        let chars = vec![0x42, 0x23];
         let msg_signature = CWMessageAlphaSignature::new(0x7F,
-                                                         [0x42, 0x23]).unwrap();
+                                                         &chars).unwrap();
         assert_eq!(msg_signature.get_codeword() & 0x1FFFFF, 0x8E17F);
     }
 
     #[test]
     fn test_message_alpha_signature_invalid() {
+        let chars = vec![0x42, 0x23];
         assert_eq!(CWMessageAlphaSignature::new(0x800,
-                                                [0x42, 0x23]).is_err(), true);
+                                                &chars).is_err(), true);
+    }
+
+    #[test]
+    fn test_message_alpha_signature_too_few_chars() {
+        let chars = vec![0x42];
+        assert_eq!(CWMessageAlphaSignature::new(0x7FF,
+                                                &chars).is_err(), true);
+    }
+
+    #[test]
+    fn test_message_alpha_signature_too_many_chars() {
+        let chars = vec![0x42, 0x23, 0x05];
+        assert_eq!(CWMessageAlphaSignature::new(0x7FF,
+                                                &chars).is_err(), true);
     }
 }
