@@ -1,11 +1,13 @@
+use codeword::Codeword;
 use apply_checksums::apply_checksums;
 
 struct BIW3 {
-    codeword: u32
+    year: u32,
+    month: u32,
+    day: u32
 }
 
-impl BIW3
-{
+impl BIW3 {
     fn new (day: u32,
             month: u32,
             year: u32) -> Result<BIW3, &'static str>
@@ -18,14 +20,10 @@ impl BIW3
         }
         else
         {
-            let mut cw: u32 = 0x0;
-            cw += 0x1 << 4;
-            cw += (year & 0x1F) << 7;
-            cw += (day & 0x1F) << 12;
-            cw += (month & 0xF) << 17;
-            cw = apply_checksums(cw);
-
-            let biw3 = BIW3 {codeword: cw};
+            let biw3 = BIW3 {
+                year: year & 0x1F,
+                month: month & 0xF,
+                day: day & 0x1F};
             Ok(biw3)
         }
     }
@@ -43,6 +41,18 @@ impl BIW3
     }
 }
 
+impl Codeword for BIW3 {
+    fn get_codeword(&self) -> u32 {
+        let mut cw: u32 = 0x0;
+        cw |= 0x1 << 4;
+        cw |= self.year << 7;
+        cw |= self.day << 12;
+        cw |= self.month << 17;
+        cw = apply_checksums(cw);
+        return cw;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -50,7 +60,7 @@ mod tests {
     #[test]
     fn test_codeword_biw3() {
         let biw3 = BIW3::new(31, 12, 5).unwrap();
-        assert_eq!(biw3.codeword & 0x1FFFFF, 0x19F29B);
+        assert_eq!(biw3.get_codeword() & 0x1FFFF0, 0x19F290);
     }
 
     #[test]
