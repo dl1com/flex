@@ -1,5 +1,6 @@
 use codeword::Codeword;
-use apply_checksums::apply_checksums;
+use apply_bch_and_parity::apply_bch_and_parity;
+use fourbit_checksum::apply_4bit_checksum;
 
 struct BIW4 {
     hour: u32,
@@ -43,7 +44,8 @@ impl Codeword for BIW4 {
         cw |= self.hour << 7;
         cw |= self.minute << 12;
         cw |= self.second << 18;
-        cw = apply_checksums(cw);
+        cw = apply_4bit_checksum(cw);
+        cw = apply_bch_and_parity(cw);
         return cw;
     }
 }

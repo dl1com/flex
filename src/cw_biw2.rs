@@ -1,5 +1,6 @@
 use codeword::Codeword;
-use apply_checksums::apply_checksums;
+use apply_bch_and_parity::apply_bch_and_parity;
+use fourbit_checksum::apply_4bit_checksum;
 
 struct BIW2 {
     local_id: u32,
@@ -23,7 +24,8 @@ impl Codeword for BIW2 {
         let mut cw: u32 = 0x0;
         cw |= self.timezone << 7;
         cw |= self.local_id << 12;
-        cw = apply_checksums(cw);
+        cw = apply_4bit_checksum(cw);
+        cw = apply_bch_and_parity(cw);
         return cw;
     }
 }
@@ -35,6 +37,6 @@ mod tests {
     #[test]
     fn test_codeword_biw2() {
         let biw2 = BIW2::new(0x1FF,1).unwrap();
-        assert_eq!(biw2.get_codeword() & 0x1FFFFF, 0x1FF088);
+        assert_eq!(biw2.get_codeword() & 0x1FFFF0, 0x1FF080);
     }
 }

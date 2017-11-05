@@ -1,5 +1,6 @@
 use codeword::Codeword;
-use apply_checksums::apply_checksums;
+use apply_bch_and_parity::apply_bch_and_parity;
+use fourbit_checksum::apply_4bit_checksum;
 
 struct BIW3 {
     year: u32,
@@ -48,7 +49,8 @@ impl Codeword for BIW3 {
         cw |= self.year << 7;
         cw |= self.day << 12;
         cw |= self.month << 17;
-        cw = apply_checksums(cw);
+        cw = apply_4bit_checksum(cw);
+        cw = apply_bch_and_parity(cw);
         return cw;
     }
 }

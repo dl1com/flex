@@ -1,5 +1,6 @@
 use codeword::Codeword;
-use apply_checksums::apply_checksums;
+use apply_bch_and_parity::apply_bch_and_parity;
+use fourbit_checksum::apply_4bit_checksum;
 
 struct BIW1 {
     priority_addr: u32,
@@ -34,7 +35,8 @@ impl Codeword for BIW1 {
         cw |= self.vector_field_start << 10;
         cw |= self.carry_on << 16;
         cw |= self.frame_id_collapse_mark << 18;
-        cw = apply_checksums(cw);
+        cw = apply_4bit_checksum(cw);
+        cw = apply_bch_and_parity(cw);
         return cw;
     }
 }
