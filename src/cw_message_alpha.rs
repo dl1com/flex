@@ -75,7 +75,7 @@ impl CWMessageAlpha {
         return sum;
     }
 
-    fn get_codewords(&mut self) -> Vec<u32> {
+    fn get_codewords(&self) -> Vec<u32> {
         let mut cws = Vec::new();
         cws.push(self.header.get_codeword());
         cws.push(self.signature.get_codeword());
@@ -123,7 +123,7 @@ mod tests {
     #[test]
     fn test_message_alpha_get_codewords() {
         let text_vec = Vec::from("Gurkensalat");
-        let mut msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
+        let msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
         assert_eq!(msg_alpha.get_codewords()[0] & 0x1FFA00,0x02F800);
         assert_eq!(msg_alpha.get_codewords()[0] & 0x3FF, 0x14F );
         assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80,0x1D6380); // Gu
@@ -135,7 +135,7 @@ mod tests {
     #[test]
     fn test_message_alpha_get_codewords_fillup() {
         let text_vec = Vec::from("Gurken");
-        let mut msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
+        let msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
         assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80,0x1D6380); // Gu
         assert_eq!(msg_alpha.get_codewords()[2] & 0x1FFFFF,0x1975F2); // rke
         assert_eq!(msg_alpha.get_codewords()[3] & 0x1FFFFF,0x00C1EE); // nETXETX
