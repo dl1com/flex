@@ -18,31 +18,33 @@ impl CWMessageAlpha {
         // - Message retrieval flag
         // - Mail Drop flag
 
-        if chars.len() > 251 {
-           return Err("Fragmented messages not implemented.");
-        }
+        let header = CWMessageAlphaHeader::new(0,
+                                               3,
+                                               message_number,
+                                               0,
+                                               0).unwrap(); 
 
-        // TODO Insert chars to fill up to 2 or multiples of 3(+2)
-        let signature = CWMessageAlphaSignature::new(CWMessageAlpha::calculate_signature(chars),
-                                                        &chars[0..2]).unwrap();
+        let mut chars_filled = chars.to_vec();
+        CWMessageAlpha::fill_up_chars(&mut chars_filled);
+        let signature = CWMessageAlphaSignature::new(
+                            CWMessageAlpha::calculate_signature(chars),
+                            &chars_filled[0..2]).unwrap();
         
         let mut content = Vec::new();
-        for i in 0..((chars.len()-2) / 3) {        
-           content.push(CWMessageAlphaContent::new(&chars[2+i*3..5+i*3]).unwrap());
+        for i in 0..((chars_filled.len()-2) / 3) {        
+           content.push(CWMessageAlphaContent::new(
+                        &chars_filled[2+i*3..5+i*3]).unwrap());
         }
-
-        let header = CWMessageAlphaHeader::new(CWMessageAlpha::calculate_fragment_check(),
-                                            0,
-                                            3,
-                                            message_number,
-                                            0,
-                                            0).unwrap(); 
         
-        return Ok(CWMessageAlpha{
-            header: header,
-            signature: signature,
-            content: content
-            });
+        return Ok(CWMessageAlpha{header: header,
+                                 signature: signature,
+                                 content: content});
+    }
+
+    fn fill_up_chars(chars: &mut Vec<u8>) {
+        while chars.len() % 3 != 2 {
+            chars.push(0x3); // ETX
+        }
     }
 
     fn calculate_signature(chars: &[u8]) -> u32 {
@@ -54,17 +56,34 @@ impl CWMessageAlpha {
         return sum & 0x7F;
     }
 
-    fn calculate_fragment_check() -> u32 {
-        return 0x0;
+    fn calculate_fragment_check(codewords: &Vec<u32>) -> u32 {
+        let mut fragment_check: u32 = 0x00;
+
+        for codeword in codewords {
+            fragment_check += CWMessageAlpha::get_bitgroup_sum(*codeword);
+        }
+
+        fragment_check ^= 0xFFFFFFFF;
+        return fragment_check & 0x3FF;
     }
 
-    fn get_codewords(&self) -> Vec<u32> {
+    fn get_bitgroup_sum(codeword: u32) -> u32 {
+        let mut sum: u32 = 0x0;
+        sum += codeword & 0xFF;
+        sum += (codeword >> 8) & 0xFF;
+        sum += (codeword >> 16) & 0x1F;
+        return sum;
+    }
+
+    fn get_codewords(&mut self) -> Vec<u32> {
         let mut cws = Vec::new();
         cws.push(self.header.get_codeword());
         cws.push(self.signature.get_codeword());
         for content in &self.content {
             cws.push(content.get_codeword());
         }
+
+        cws[0] |= CWMessageAlpha::calculate_fragment_check(&cws);
         return cws;
     }
 }
@@ -88,15 +107,54 @@ mod tests {
     }
 
     #[test]
+    fn test_fill_up_chars_1() {
+        let mut chars = vec![0x00];
+        CWMessageAlpha::fill_up_chars(&mut chars);
+        assert_eq!(chars.len(), 2);
+    }
+
+    #[test]
+    fn test_fill_up_chars_3() {
+        let mut chars = vec![0x00, 0x01, 0x03];
+        CWMessageAlpha::fill_up_chars(&mut chars);
+        assert_eq!(chars.len(), 5);
+    }
+
+    #[test]
     fn test_message_alpha_get_codewords() {
         let text_vec = Vec::from("Gurkensalat");
-        let msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
-        println!("{:?}",msg_alpha.get_codewords());
-        println!("0x{:X}",msg_alpha.get_codewords()[0] & 0x1FFFFF);
+        let mut msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
         assert_eq!(msg_alpha.get_codewords()[0] & 0x1FFA00,0x02F800);
+        assert_eq!(msg_alpha.get_codewords()[0] & 0x3FF, 0x14F );
         assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80,0x1D6380); // Gu
         assert_eq!(msg_alpha.get_codewords()[2] & 0x1FFFFF,0x1975F2); // rke
         assert_eq!(msg_alpha.get_codewords()[3] & 0x1FFFFF,0x1879EE); // nsa
         assert_eq!(msg_alpha.get_codewords()[4] & 0x1FFFFF,0x1D30EC); // lat
+    }
+
+    #[test]
+    fn test_message_alpha_get_codewords_fillup() {
+        let text_vec = Vec::from("Gurken");
+        let mut msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
+        assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80,0x1D6380); // Gu
+        assert_eq!(msg_alpha.get_codewords()[2] & 0x1FFFFF,0x1975F2); // rke
+        assert_eq!(msg_alpha.get_codewords()[3] & 0x1FFFFF,0x00C1EE); // nETXETX
+    }
+
+    #[test]
+    fn test_get_bitgroup_sum() {
+        assert_eq!(CWMessageAlpha::get_bitgroup_sum(0x1FFFFF), 0x21D);
+    }
+
+    #[test]
+    fn test_calculate_fragment_check_1() {
+        let codewords = vec![0x1FFFFF];
+        assert_eq!(CWMessageAlpha::calculate_fragment_check(&codewords), 0x1E2);
+    }
+
+    #[test]
+    fn test_calculate_fragment_check_2() {
+        let codewords = vec![0x1FFFFF, 0x1FFFFF];
+        assert_eq!(CWMessageAlpha::calculate_fragment_check(&codewords), 0x3C5);
     }
 }
