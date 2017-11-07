@@ -37,6 +37,14 @@ impl CWMessageAlphaHeader {
             Err("Alphanumeric Message Header: Invalid Parameter.")
         }
     }
+
+    pub fn set_fragment_check(&mut self, fragment_check: u32) -> Result<(),&'static str> {
+        if fragment_check <= 0x3FF {
+            self.fragment_check = fragment_check;
+            return Ok(())
+        }
+        return Err("Fragment check out of range");
+    }
 }
 
 impl Codeword for CWMessageAlphaHeader {
@@ -76,7 +84,6 @@ mod tests {
                                                    23,
                                                    0,
                                                    0).unwrap();
-        println!("0x{:X}",msg_header.get_codeword() & 0x1FFFFF);
         assert_eq!(msg_header.get_codeword() & 0x1FFFFF, 0x2F800);
     }
 
@@ -88,5 +95,30 @@ mod tests {
                                              63,
                                              1,
                                              0).is_err(), true);
+    }
+
+    #[test]
+    fn test_message_alpha_header_set_fragment_check() {
+        let mut msg_header = CWMessageAlphaHeader::new(0x00,
+                                                   0,
+                                                   3,
+                                                   23,
+                                                   0,
+                                                   0).unwrap();
+        
+        assert_eq!(msg_header.set_fragment_check(0x3FF).is_err(), false);
+        assert_eq!(msg_header.get_codeword() & 0x3FF, 0x3FF);
+    }
+
+    #[test]
+    fn test_message_alpha_header_set_fragment_check_out_of_range() {
+        let mut msg_header = CWMessageAlphaHeader::new(0x00,
+                                                   0,
+                                                   3,
+                                                   23,
+                                                   0,
+                                                   0).unwrap();
+        
+        assert_eq!(msg_header.set_fragment_check(0x400).is_err(), true);
     }
 }
