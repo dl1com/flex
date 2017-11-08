@@ -13,7 +13,6 @@ impl CWMessageAlphaContent {
         if chars.len() != 3 {
             return Err("Alphanumeric Message Content: 3 chars required.");
         }
-        println!("{:?}", str::from_utf8(chars).unwrap());
         return Ok(CWMessageAlphaContent{
             chars: chars.to_vec()
         });
