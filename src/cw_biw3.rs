@@ -22,7 +22,7 @@ impl BIW3 {
         else
         {
             let biw3 = BIW3 {
-                year: year,
+                year: year - 1994,
                 month: month,
                 day: day};
             Ok(biw3)
@@ -38,7 +38,7 @@ impl BIW3 {
     }
 
     fn check_year(year: u32) -> bool {
-        return year <= 0x1F
+        return year >= 1994 && year <= 2025
     }
 }
 
@@ -61,27 +61,37 @@ mod tests {
 
     #[test]
     fn test_codeword_biw3() {
-        let biw3 = BIW3::new(31, 12, 5).unwrap();
+        let biw3 = BIW3::new(31, 12, 1999).unwrap();
         assert_eq!(biw3.get_codeword() & 0x1FFFF0, 0x19F290);
     }
 
     #[test]
     fn test_codeword_biw3_invalid_day() {
-        assert_eq!(BIW3::new(32, 12, 5).is_err(), true);
+        assert_eq!(BIW3::new(32, 12, 1999).is_err(), true);
     }
 
     #[test]
     fn test_codeword_biw3_invalid_month() {
-        assert_eq!(BIW3::new(31, 13, 5).is_err(), true);
+        assert_eq!(BIW3::new(31, 13, 1999).is_err(), true);
     }
 
     #[test]
     fn test_codeword_biw3_invalid_day_0() {
-        assert_eq!(BIW3::new(0, 12, 5).is_err(), true);
+        assert_eq!(BIW3::new(0, 12, 1999).is_err(), true);
     }
 
     #[test]
     fn test_codeword_biw3_invalid_month_0() {
-        assert_eq!(BIW3::new(31, 0, 5).is_err(), true);
+        assert_eq!(BIW3::new(31, 0, 1999).is_err(), true);
+    }
+
+    #[test]
+    fn test_codeword_biw3_invalid_year_low() {
+        assert_eq!(BIW3::new(1, 1, 1993).is_err(), true);
+    }
+
+    #[test]
+    fn test_codeword_biw3_invalid_year_high() {
+        assert_eq!(BIW3::new(1, 1, 2026).is_err(), true);
     }
 }
