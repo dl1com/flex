@@ -9,12 +9,12 @@ const PATTERN_B     : u16 = 0xAAAA;
 const PATTERN_BS2   : u8  = 0x05;
 const PATTERN_C     : u16 = 0x21B7;
 
-struct Frame {
+pub struct Frame {
     fiw: FIW
 }
 
 impl Frame {
-    fn new (cycle_number: u32,
+    pub fn new (cycle_number: u32,
             frame_number: u32) -> Result<Frame,&'static str>
     {
         let fiw = FIW::new(cycle_number,
@@ -53,7 +53,7 @@ impl Frame {
         return header;
     }
 
-    fn get_bytes(&self) -> Vec<u8> {
+    pub fn get_bytes(&self) -> Vec<u8> {
         let block = Block::new().unwrap();
 
         let mut bytes = Vec::new();

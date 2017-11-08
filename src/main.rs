@@ -21,6 +21,18 @@ mod frame;
 mod block;
 mod apply_bch_and_parity;
 
+use frame::Frame;
+
+use std::fs::File;
+use std::io::prelude::*;
+
 
 fn main() {
+
+    let frame = Frame::new(0, 0).unwrap();
+    let bytes = frame.get_bytes();
+    println!("{:?}", bytes);
+
+    let mut file = File::create("/tmp/frame.dat").unwrap();
+    file.write_all(&bytes).unwrap();
 }
