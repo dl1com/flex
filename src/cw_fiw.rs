@@ -2,7 +2,7 @@ use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 use fourbit_checksum::apply_4bit_checksum;
 
-struct FIW {
+pub struct FIW {
     cycle_number: u32,
     frame_number: u32,
     repeat_paging: u32,
@@ -10,7 +10,7 @@ struct FIW {
 }
 
 impl FIW {
-    fn new (cycle_number: u32,
+    pub fn new (cycle_number: u32,
             frame_number: u32,
             repeat_paging: u32,
             low_traffic_flags: u32) -> Result<FIW,&'static str>
