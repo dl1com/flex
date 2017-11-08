@@ -2,13 +2,13 @@ use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 use fourbit_checksum::apply_4bit_checksum;
 
-struct BIW2 {
+pub struct BIW2 {
     local_id: u32,
     timezone: u32
 }
 
 impl BIW2 {
-    fn new (local_id: u32,
+    pub fn new (local_id: u32,
             timezone: u32) -> Result<BIW2, &'static str>
     {
         let biw2 = BIW2 {

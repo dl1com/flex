@@ -17,8 +17,8 @@ mod cw_message_alpha_header;
 mod cw_message_alpha_signature;
 mod cw_message_alpha_content;
 mod cw_message_alpha;
-mod cw_statics;
 mod frame;
+mod block;
 mod apply_bch_and_parity;
 
 

@@ -2,14 +2,14 @@ use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 use fourbit_checksum::apply_4bit_checksum;
 
-struct CWVectorAlpha {
+pub struct CWVectorAlpha {
     message_start: u32,
     message_words: u32
 }
 
 impl CWVectorAlpha {
-    fn new(message_start: u32,
-           message_words: u32) -> Result<CWVectorAlpha, &'static str> {
+    pub fn new(message_start: u32,
+               message_words: u32) -> Result<CWVectorAlpha, &'static str> {
         if message_start >= 3 && message_start <= 87
             && message_words >= 1 && message_words <= 85 {
             Ok(CWVectorAlpha{

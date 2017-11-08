@@ -2,7 +2,7 @@ use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 use fourbit_checksum::apply_4bit_checksum;
 
-struct BIW1 {
+pub struct BIW1 {
     priority_addr: u32,
     end_of_block: u32,
     vector_field_start: u32,
@@ -11,7 +11,7 @@ struct BIW1 {
 }
 
 impl BIW1 {
-    fn new (priority_addr: u32,
+    pub fn new (priority_addr: u32,
             end_of_block: u32,
             vector_field_start: u32,
             carry_on: u32,

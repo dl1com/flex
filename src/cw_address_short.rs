@@ -1,12 +1,12 @@
 use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 
-struct CWAddressShort {
+pub struct CWAddressShort {
     address: u32
 }
 
 impl CWAddressShort {
-    fn new(address: u32) -> Result<CWAddressShort, &'static str> {
+    pub fn new(address: u32) -> Result<CWAddressShort, &'static str> {
         if address >= 0x8001 && address <= 0x1F27FF 
             {
                 Ok(CWAddressShort{address: address})

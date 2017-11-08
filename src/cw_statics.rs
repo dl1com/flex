@@ -1,4 +1,0 @@
-
-
-//const CW_IDLEBLOCK_ZEROES   : u32 = 0x00000000;
-//const CW_IDLEBLOCK_ONES     : u32 = 0xFFFFFFFF;

@@ -2,14 +2,14 @@ use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 use fourbit_checksum::apply_4bit_checksum;
 
-struct BIW3 {
+pub struct BIW3 {
     year: u32,
     month: u32,
     day: u32
 }
 
 impl BIW3 {
-    fn new (day: u32,
+    pub fn new (day: u32,
             month: u32,
             year: u32) -> Result<BIW3, &'static str>
     {

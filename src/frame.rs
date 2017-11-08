@@ -1,5 +1,6 @@
 
 use cw_fiw::FIW;
+use block::Block;
 use codeword::Codeword;
 
 const PATTERN_BS1   : u32 = 0x55555555;
@@ -53,8 +54,14 @@ impl Frame {
     }
 
     fn get_bytes(&self) -> Vec<u8> {
+        let block = Block::new().unwrap();
+
         let mut bytes = Vec::new();
         bytes.extend_from_slice(&self.get_header());
+        bytes.extend_from_slice(&block.get_bytes());
+        for i in 0..10 {
+            bytes.extend_from_slice(&Block::get_empty_block());
+        }
         return bytes;
     }
 

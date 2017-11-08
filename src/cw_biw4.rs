@@ -2,14 +2,14 @@ use codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 use fourbit_checksum::apply_4bit_checksum;
 
-struct BIW4 {
+pub struct BIW4 {
     hour: u32,
     minute: u32,
     second: u32
 }
 
 impl BIW4 {
-    fn new (hour: u32,
+    pub fn new (hour: u32,
             minute: u32,
             second: u32) -> Result<BIW4, &'static str>
     {

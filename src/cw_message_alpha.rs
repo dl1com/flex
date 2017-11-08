@@ -3,14 +3,14 @@ use cw_message_alpha_header::CWMessageAlphaHeader;
 use cw_message_alpha_signature::CWMessageAlphaSignature;
 use cw_message_alpha_content::CWMessageAlphaContent;
 
-struct CWMessageAlpha {
+pub struct CWMessageAlpha {
     header: CWMessageAlphaHeader,
     signature: CWMessageAlphaSignature,
     content: Vec<CWMessageAlphaContent>
 }
 
 impl CWMessageAlpha {
-    fn new (message_number: u32,
+    pub fn new (message_number: u32,
             chars: &[u8]) -> Result<CWMessageAlpha, &'static str>
     {
         // Not supported for now:
@@ -75,7 +75,7 @@ impl CWMessageAlpha {
         return sum;
     }
 
-    fn get_codewords(&self) -> Vec<u32> {
+    pub fn get_codewords(&self) -> Vec<u32> {
         let mut cws = Vec::new();
         cws.push(self.header.get_codeword());
         cws.push(self.signature.get_codeword());
