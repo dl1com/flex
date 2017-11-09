@@ -1,8 +1,6 @@
 extern crate bitstream_io;
 
-mod interleaver;
 mod parity;
-mod header_builder;
 mod bch_calculator;
 mod fourbit_checksum;
 mod codeword;
@@ -31,14 +29,22 @@ use bit_reverse::ParallelReverse;
 
 fn main() {
 
-    let frame = Frame::new(3, 107).unwrap();
-    let bytes = frame.get_bytes();
-    let mut rotated_bytes = Vec::new();
-    for byte in bytes {
-        rotated_bytes.push(byte.swap_bits());
+    let mut frames = Vec::new();
+    for cycle in 0..1 {
+        for frame in 0..128 {
+            frames.push(Frame::new(cycle, frame).unwrap());
+        }
     }
-    println!("{:?}", rotated_bytes);
 
     let mut file = File::create("/tmp/dump.bin").unwrap();
-    file.write_all(&rotated_bytes).unwrap();
+    for frame in frames {
+        let bytes = frame.get_bytes();
+        let mut rotated_bytes = Vec::new();
+        for byte in bytes {
+            rotated_bytes.push(byte.swap_bits());
+        }
+
+        println!("{:?}", rotated_bytes);        
+        file.write_all(&rotated_bytes).unwrap();
+    }
 }
