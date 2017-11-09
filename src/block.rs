@@ -18,25 +18,26 @@ impl Block {
     pub fn get_bytes(&self) -> Vec<u8> {
         // Test block layout
         // 0    BIW 1
-        // 1    BIW 3
-        // 2    BIW 4
-        // 3    Address
-        // 4    Alphanum Vector
-        // 5    Alphanum Msg
-        // 6-10 
+        // 1    BIW3
+        // 2    BIW4
+        // 3    Address Short
+        // 4    ALN Vector
+        // 5    ALN Msg Header
+        // 6    ALN Msg Sig
+        // 7    ALN Msg
 
         // Priority addresses not supported by now
         // Carry-on not supported by now
         let biw1 = BIW1::new(0,
-                             3, // BIW 1, 3, 4
-                             4, // 
+                             2, // Addresses start from word 3
+                             4, // Vectors start from field 4
                              0,
                              0).unwrap(); // 0=pager decodes all frames
-        let biw3 = BIW3::new(23, 5, 1999).unwrap();
+        let address = CWAddressShort::new(0x8204).unwrap();
+        let biw3 = BIW3::new(23, 05, 1999).unwrap();
         let biw4 = BIW4::new(13, 37, 0).unwrap();
-        let address = CWAddressShort::new(0x042086).unwrap();
         let vector_alpha = CWVectorAlpha::new(5, 3).unwrap();
-        let msg_alpha = CWMessageAlpha::new(1, String::from("test").as_bytes()).unwrap();
+        let msg_alpha = CWMessageAlpha::new(1, String::from("gurke").as_bytes()).unwrap();
 
         let mut block_cws = Vec::new();
         block_cws.push(biw1.get_codeword());
@@ -57,7 +58,7 @@ impl Block {
 
     fn interleave_codewords_1600(input: &[u32]) -> [u8; 32]
     {
-        if input.len() != 8 {panic!("");}
+        if input.len() != 8 {panic!("Exactly 8 input codewords required");}
 
         let mut output_data: [u8; 32] = [0; 32];
         for bit_index in 0..32 {
