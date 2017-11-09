@@ -26,13 +26,19 @@ use frame::Frame;
 use std::fs::File;
 use std::io::prelude::*;
 
+extern crate bit_reverse;
+use bit_reverse::ParallelReverse;
 
 fn main() {
 
-    let frame = Frame::new(0, 0).unwrap();
+    let frame = Frame::new(3, 107).unwrap();
     let bytes = frame.get_bytes();
-    println!("{:?}", bytes);
+    let mut rotated_bytes = Vec::new();
+    for byte in bytes {
+        rotated_bytes.push(byte.swap_bits());
+    }
+    println!("{:?}", rotated_bytes);
 
-    let mut file = File::create("/tmp/frame.dat").unwrap();
-    file.write_all(&bytes).unwrap();
+    let mut file = File::create("/tmp/dump.bin").unwrap();
+    file.write_all(&rotated_bytes).unwrap();
 }
