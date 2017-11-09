@@ -3,6 +3,8 @@ use cw_message_alpha_header::CWMessageAlphaHeader;
 use cw_message_alpha_signature::CWMessageAlphaSignature;
 use cw_message_alpha_content::CWMessageAlphaContent;
 
+use apply_bch_and_parity::apply_bch_and_parity;
+
 pub struct CWMessageAlpha {
     header: CWMessageAlphaHeader,
     signature: CWMessageAlphaSignature,
@@ -22,8 +24,7 @@ impl CWMessageAlpha {
                                                3,
                                                message_number,
                                                0,
-                                               0).unwrap(); 
-
+                                               0).unwrap();
         let mut chars_filled = chars.to_vec();
         CWMessageAlpha::fill_up_chars(&mut chars_filled);
         let signature = CWMessageAlphaSignature::new(
@@ -83,7 +84,9 @@ impl CWMessageAlpha {
             cws.push(content.get_codeword());
         }
 
-        cws[0] |= CWMessageAlpha::calculate_fragment_check(&cws);
+        let fragment_check = CWMessageAlpha::calculate_fragment_check(&cws);
+        let header = cws[0] | fragment_check;
+        cws[0] = apply_bch_and_parity(header & 0x1FFFFF);
         return cws;
     }
 }
