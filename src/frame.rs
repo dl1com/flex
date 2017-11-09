@@ -20,7 +20,7 @@ impl Frame {
         let fiw = FIW::new(cycle_number,
                            frame_number,
                            0,
-                           0x0F).unwrap();
+                           0x00).unwrap();
         return Ok(Frame{fiw: fiw});
     }
 
@@ -92,7 +92,7 @@ mod tests {
         assert_eq!(frame.get_header(), 
                    [0x55, 0x55, 0x55, 0x55, 0x1E, 0xCF, 0x9A, 0x9C, // sync1
                    0xAA, 0xAA, 0xE1, 0x30, 0x65, 0x63,
-                   0x00, 0x00, 0x1E, 0x42,                          // FIW
+                   0x0F, 0x00, 0x1E, 0x42,                          // FIW
                    0x75, 0x1B, 0xA2, 0x48, 0xDE]);                  // Sync2
     }
 

@@ -52,6 +52,12 @@ mod tests {
     }
 
     #[test]
+    fn test_cw_vector_alphanum_crc() {
+        let cw_vector_alphanum = CWVectorAlpha::new(3, 49).unwrap();
+        assert_eq!(cw_vector_alphanum.get_codeword(), 0xD98C41D1)
+    }
+
+    #[test]
     fn test_cw_vector_alphanum_out_of_range_1() {
         assert_eq!(CWVectorAlpha::new(0, 1).is_err(), true);
     }

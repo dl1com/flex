@@ -50,4 +50,10 @@ mod tests {
         let biw1 = BIW1::new(10,2,60,1,6).unwrap();
         assert_eq!(biw1.get_codeword() & 0x1FFFF0, 0x19F2A0);
     }
+
+    #[test]
+    fn test_codeword_biw1_crc() {
+        let biw1 = BIW1::new(0,0,2,0,0).unwrap();
+        assert_eq!(biw1.get_codeword(), 0x19400807);
+    }
 }

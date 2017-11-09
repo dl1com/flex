@@ -70,4 +70,10 @@ mod tests {
     fn test_codeword_fiw_out_of_range_repeat() {
         assert_eq!(FIW::new(14, 60, 2, 8).is_err(), true);
     }
+
+    #[test]
+    fn test_codeword_fiw_test_crc() {
+        let fiw = FIW::new(3, 107, 0, 0).unwrap();
+        assert_eq!(fiw.get_codeword(), 0xE4A06B3B);
+    }
 }
