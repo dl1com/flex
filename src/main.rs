@@ -18,6 +18,7 @@ mod cw_message_alpha;
 mod frame;
 mod block;
 mod apply_bch_and_parity;
+mod message;
 
 use frame::Frame;
 
