@@ -1,9 +1,8 @@
 
 use cw_fiw::FIW;
-use block::Block;
+use blocks::Blocks;
 use codeword::Codeword;
 use message::Message;
-use message::MessageType;
 
 const PATTERN_BS1   : u32 = 0x55555555;
 const PATTERN_A1    : u32 = 0x9C9ACF1E; // A1: 1600 / 2 FM
@@ -16,6 +15,7 @@ const MAX_CODEWORDS_PER_BLOCK_1600 : usize = 88;
 pub struct Frame {
     fiw: FIW,
     num_cws: usize,
+    send_time: bool,
     msgs: Vec<Message>
 }
 
@@ -27,8 +27,17 @@ impl Frame {
                            frame_number,
                            0,
                            0x00).unwrap();
+
+        let mut num_cws = 1; // BIW1
+        let mut send_time = false;
+        if frame_number == 0 {
+            send_time = true;  // send BIW2, 3 and 4
+            num_cws += 3;
+        }
+
         return Ok(Frame{fiw: fiw,
-                        num_cws: 1, // BIW1 is always sent
+                        num_cws: num_cws,
+                        send_time,
                         msgs: Vec::new()});
     }
 
@@ -61,15 +70,10 @@ impl Frame {
         return header;
     }
 
-    pub fn get_bytes(&self) -> Vec<u8> {
-        let block = Block::new().unwrap();
-
+    pub fn get_bytes(&self) -> Vec<u8> {        
         let mut bytes = Vec::new();
         bytes.extend_from_slice(&self.get_header());
-        bytes.extend_from_slice(&block.get_bytes());
-        for _ in 0..10 {
-            bytes.extend_from_slice(&Block::get_empty_block());
-        }
+        bytes.extend_from_slice(&Blocks::get_bytes(&self.msgs, self.send_time));
         return bytes;
     }
 
@@ -108,7 +112,7 @@ mod tests {
 
     #[test]
     fn test_frame_add_message() {
-        let mut frame = Frame::new(0, 0).unwrap();
+        let mut frame = Frame::new(0, 1).unwrap();
         let msg = Message::new(MessageType::AlphaNum,
                                0x8001,
                                String::from("test")).unwrap();
@@ -117,7 +121,7 @@ mod tests {
 
     #[test]
     fn test_frame_add_message_86() {
-        let mut frame = Frame::new(0, 0).unwrap();
+        let mut frame = Frame::new(0, 1).unwrap();
         for _ in 0..16 { 
             frame.add_message(Message::new(MessageType::AlphaNum,
                               0x8001,
@@ -131,7 +135,7 @@ mod tests {
 
     #[test]
     fn test_frame_add_message_91() {
-        let mut frame = Frame::new(0, 0).unwrap();
+        let mut frame = Frame::new(0, 1).unwrap();
         for _ in 0..17 { 
             frame.add_message(Message::new(MessageType::AlphaNum,
                               0x8001,

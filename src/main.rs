@@ -16,11 +16,13 @@ mod cw_message_alpha_signature;
 mod cw_message_alpha_content;
 mod cw_message_alpha;
 mod frame;
-mod block;
+mod blocks;
 mod apply_bch_and_parity;
 mod message;
 
 use frame::Frame;
+use message::Message;
+use message::MessageType;
 
 use std::fs::File;
 use std::io::prelude::*;
@@ -32,8 +34,13 @@ fn main() {
 
     let mut frames = Vec::new();
     for cycle in 0..1 {
-        for frame in 0..128 {
-            frames.push(Frame::new(cycle, frame).unwrap());
+        for frame in 0..1 {
+            let msg = Message::new(MessageType::AlphaNum,
+                                   0x42083,
+                                   String::from("das pferd isst keinen gurkensalat")).unwrap();
+            let mut frame = Frame::new(cycle, frame).unwrap();
+            frame.add_message(msg).unwrap();
+            frames.push(frame);
         }
     }
 
