@@ -2,6 +2,8 @@
 use cw_fiw::FIW;
 use block::Block;
 use codeword::Codeword;
+use message::Message;
+use message::MessageType;
 
 const PATTERN_BS1   : u32 = 0x55555555;
 const PATTERN_A1    : u32 = 0x9C9ACF1E; // A1: 1600 / 2 FM
@@ -9,8 +11,12 @@ const PATTERN_B     : u16 = 0xAAAA;
 const PATTERN_BS2   : u8  = 0x05;
 const PATTERN_C     : u16 = 0x21B7;
 
+const MAX_CODEWORDS_PER_BLOCK_1600 : usize = 88;
+
 pub struct Frame {
-    fiw: FIW
+    fiw: FIW,
+    num_cws: usize,
+    msgs: Vec<Message>
 }
 
 impl Frame {
@@ -21,7 +27,9 @@ impl Frame {
                            frame_number,
                            0,
                            0x00).unwrap();
-        return Ok(Frame{fiw: fiw});
+        return Ok(Frame{fiw: fiw,
+                        num_cws: 1, // BIW1 is always sent
+                        msgs: Vec::new()});
     }
 
     fn get_sync1() -> Vec<u8> {
@@ -59,10 +67,22 @@ impl Frame {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(&self.get_header());
         bytes.extend_from_slice(&block.get_bytes());
-        for i in 0..10 {
+        for _ in 0..10 {
             bytes.extend_from_slice(&Block::get_empty_block());
         }
         return bytes;
+    }
+
+    pub fn add_message(&mut self, msg: Message) -> Result<usize,&'static str> {
+        let size_new_msg = msg.get_num_codewords().unwrap();
+        let sum = size_new_msg + self.num_cws;
+
+        if sum < MAX_CODEWORDS_PER_BLOCK_1600 {
+            self.msgs.push(msg);
+            self.num_cws = sum;
+            return Ok(sum);
+        }
+        return Err("could not add message to frame");        
     }
 
     fn u32_to_4_u8(var: u32) -> [u8; 4] {
@@ -85,6 +105,43 @@ impl Frame {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_frame_add_message() {
+        let mut frame = Frame::new(0, 0).unwrap();
+        let msg = Message::new(MessageType::AlphaNum,
+                               0x8001,
+                               String::from("test")).unwrap();
+        assert_eq!(frame.add_message(msg).unwrap(), 6);
+    }
+
+    #[test]
+    fn test_frame_add_message_86() {
+        let mut frame = Frame::new(0, 0).unwrap();
+        for _ in 0..16 { 
+            frame.add_message(Message::new(MessageType::AlphaNum,
+                              0x8001,
+                              String::from("test")).unwrap()).unwrap();
+        }
+        let msg = Message::new(MessageType::AlphaNum,
+                               0x8001,
+                               String::from("test")).unwrap();
+        assert_eq!(frame.add_message(msg).unwrap(), 86);
+    }
+
+    #[test]
+    fn test_frame_add_message_91() {
+        let mut frame = Frame::new(0, 0).unwrap();
+        for _ in 0..17 { 
+            frame.add_message(Message::new(MessageType::AlphaNum,
+                              0x8001,
+                              String::from("test")).unwrap()).unwrap();
+        }
+        let msg = Message::new(MessageType::AlphaNum,
+                               0x8001,
+                               String::from("test")).unwrap();
+        assert_eq!(frame.add_message(msg).is_err(), true);
+    }
 
     #[test]
     fn test_frame_get_header() {
