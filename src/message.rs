@@ -11,8 +11,8 @@ pub enum AddressType {
 
 pub struct Message {
     msgtype: MessageType,
-    address: u32,
-    data: String
+    pub address: u32,
+    pub data: String
 }
 
 impl Message {
@@ -37,17 +37,17 @@ impl Message {
         }
 
         match self.msgtype {
-            MessageType::AlphaNum => size += Message::aln_size(&self.data)
+            MessageType::AlphaNum => size += self.get_content_cw_size()
         }
 
         return Ok(size);
     }
 
-    fn aln_size(string: &String) -> usize {
+    pub fn get_content_cw_size(&self) -> usize {
         let mut size: usize = 0;
         size += 2;                      // Message Header and Signature
-        size += (string.len()-2) / 3;   // 3 chars per Content codeword
-        if (string.len()-2) % 3 > 0 {
+        size += (self.data.len()-2) / 3;   // 3 chars per Content codeword
+        if (self.data.len()-2) % 3 > 0 {
             size += 1;
         }
         return size;
@@ -88,8 +88,11 @@ mod tests {
     }
 
     #[test]
-    fn test_calc_aln_size() {
-        assert_eq!(Message::aln_size(&String::from("abcde")), 3);
+    fn test_get_content_cw_size() {
+        let msg = Message::new(MessageType::AlphaNum,
+                        0x8001,
+                        String::from("abcde")).unwrap();
+        assert_eq!(msg.get_content_cw_size(), 3);
     }
 
     #[test]
