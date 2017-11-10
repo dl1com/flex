@@ -37,7 +37,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_address_cw_short_lowest_crc() {
+    fn test_get_address_cw_short_crc() {
         let cw_address_short = CWAddressShort::new(0x8204).unwrap();
         assert_eq!(cw_address_short.get_codeword(), 0xBF008204)
     }
