@@ -3,6 +3,7 @@ use cw_fiw::FIW;
 use blocks::Blocks;
 use codeword::Codeword;
 use message::Message;
+use message::MessageType;
 
 const PATTERN_BS1   : u32 = 0x55555555;
 const PATTERN_A1    : u32 = 0x9C9ACF1E; // A1: 1600 / 2 FM
