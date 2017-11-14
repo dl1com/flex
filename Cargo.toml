@@ -4,5 +4,4 @@ version = "0.1.0"
 authors = ["chris <mail@chris007.de>"]
 
 [dependencies]
-bitstream-io = "0.6.1"
 bit_reverse = "0.1.7"

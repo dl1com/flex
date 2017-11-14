@@ -1,5 +1,3 @@
-extern crate bitstream_io;
-
 mod parity;
 mod bch_calculator;
 mod fourbit_checksum;

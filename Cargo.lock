@@ -3,7 +3,6 @@ name = "flex"
 version = "0.1.0"
 dependencies = [
  "bit_reverse 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "bitstream-io 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -11,11 +10,5 @@ name = "bit_reverse"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
-[[package]]
-name = "bitstream-io"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-
 [metadata]
 "checksum bit_reverse 0.1.7 (registry+https://github.com/rust-lang/crates.io-index)" = "5e97e02db5a2899c0377f3d6031d5da8296ca2b47abef6ed699de51b9e40a28c"
-"checksum bitstream-io 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)" = "f772fe14aa1856dd6ae15af96de288ac0976f657e6267beed1757dde3417dcd3"
