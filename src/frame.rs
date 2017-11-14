@@ -1,7 +1,7 @@
 
-use cw_fiw::FIW;
+use codewords::cw_fiw::FIW;
 use blocks::Blocks;
-use codeword::Codeword;
+use codewords::codeword::Codeword;
 use message::Message;
 
 const PATTERN_BS1   : u32 = 0x55555555;

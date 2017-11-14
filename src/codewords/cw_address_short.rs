@@ -1,4 +1,4 @@
-use codeword::Codeword;
+use super::codeword::Codeword;
 use apply_bch_and_parity::apply_bch_and_parity;
 
 pub struct CWAddressShort {
