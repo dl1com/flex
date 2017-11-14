@@ -1,12 +1,12 @@
 
 use codewords::codeword::Codeword;
-use codewords::cw_biw1::BIW1;
-use codewords::cw_biw2::BIW2;
-use codewords::cw_biw3::BIW3;
-use codewords::cw_biw4::BIW4;
-use codewords::cw_address_short::CWAddressShort;
-use codewords::cw_vector_alpha::CWVectorAlpha;
-use codewords::cw_message_alpha::CWMessageAlpha;
+use codewords::biw1::BIW1;
+use codewords::biw2::BIW2;
+use codewords::biw3::BIW3;
+use codewords::biw4::BIW4;
+use codewords::address_short::CWAddressShort;
+use codewords::vector_alpha::CWVectorAlpha;
+use codewords::message_alpha::CWMessageAlpha;
 
 use message::Message;
 

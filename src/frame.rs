@@ -1,5 +1,5 @@
 
-use codewords::cw_fiw::FIW;
+use codewords::fiw::FIW;
 use blocks::Blocks;
 use codewords::codeword::Codeword;
 use message::Message;
