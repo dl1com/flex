@@ -89,6 +89,12 @@ impl Frame {
         return Err("could not add message to frame");        
     }
 
+    pub fn calculate_cycle_and_frame(minutes: u32, seconds: u32) -> (u32,u32) {
+        let cycle = minutes / 4;
+        let frame = ((minutes % 4) * 60 + seconds) as f64 / 1.875;
+        return (cycle,frame as u32)
+    }
+
     fn u32_to_4_u8(var: u32) -> [u8; 4] {
         let mut array: [u8; 4] = [0; 4];
         array[0] = (var & 0xFF) as u8;
@@ -181,5 +187,17 @@ mod tests {
     fn test_u16_to_2_u8() {
         assert_eq!(Frame::u16_to_2_u8(0x1234),
                    [0x34, 0x12]);
+    }
+
+    #[test]
+    fn test_calculate_cycle_and_frame_lowest() {
+        let time = Utc.ymd(2014, 7, 8).and_hms(9, 0, 0);
+        assert_eq!(calculate_cycle_and_frame(time.minute(), time.second()), (0,0));
+    }
+
+    #[test]
+    fn test_calculate_cycle_and_frame_highest() {
+        let time = Utc.ymd(2014, 7, 8).and_hms(9, 59, 59);
+        assert_eq!(calculate_cycle_and_frame(time.minute(), time.second()), (14,127));
     }
 }
