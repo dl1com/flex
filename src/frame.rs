@@ -191,13 +191,11 @@ mod tests {
 
     #[test]
     fn test_calculate_cycle_and_frame_lowest() {
-        let time = Utc.ymd(2014, 7, 8).and_hms(9, 0, 0);
-        assert_eq!(calculate_cycle_and_frame(time.minute(), time.second()), (0,0));
+        assert_eq!(Frame::calculate_cycle_and_frame(0, 0), (0,0));
     }
 
     #[test]
     fn test_calculate_cycle_and_frame_highest() {
-        let time = Utc.ymd(2014, 7, 8).and_hms(9, 59, 59);
-        assert_eq!(calculate_cycle_and_frame(time.minute(), time.second()), (14,127));
+        assert_eq!(Frame::calculate_cycle_and_frame(59, 59), (14,127));
     }
 }
