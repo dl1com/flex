@@ -77,12 +77,12 @@ impl Frame {
         return bytes;
     }
 
-    pub fn add_message(&mut self, msg: Message) -> Result<usize,&'static str> {
+    pub fn add_message(&mut self, msg: &Message) -> Result<usize,&'static str> {
         let size_new_msg = msg.get_num_codewords().unwrap();
         let sum = size_new_msg + self.num_cws;
 
         if sum < MAX_CODEWORDS_PER_BLOCK_1600 {
-            self.msgs.push(msg);
+            self.msgs.push(msg.clone());
             self.num_cws = sum;
             return Ok(sum);
         }
@@ -120,38 +120,39 @@ mod tests {
     #[test]
     fn test_frame_add_message() {
         let mut frame = Frame::new(0, 1).unwrap();
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("test")).unwrap();
-        assert_eq!(frame.add_message(msg).unwrap(), 6);
+        assert_eq!(frame.add_message(&msg).unwrap(), 6);
     }
 
     #[test]
     fn test_frame_add_message_86() {
         let mut frame = Frame::new(0, 1).unwrap();
-        for _ in 0..16 { 
-            frame.add_message(Message::new(MessageType::AlphaNum,
-                              0x8001,
-                              String::from("test")).unwrap()).unwrap();
-        }
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("test")).unwrap();
-        assert_eq!(frame.add_message(msg).unwrap(), 86);
+        for _ in 0..16 { 
+            frame.add_message(&msg).unwrap();
+        }
+
+        assert_eq!(frame.add_message(&msg).unwrap(), 86);
     }
 
     #[test]
     fn test_frame_add_message_91() {
         let mut frame = Frame::new(0, 1).unwrap();
-        for _ in 0..17 { 
-            frame.add_message(Message::new(MessageType::AlphaNum,
-                              0x8001,
-                              String::from("test")).unwrap()).unwrap();
-        }
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("test")).unwrap();
-        assert_eq!(frame.add_message(msg).is_err(), true);
+        for _ in 0..17 { 
+            frame.add_message(&msg).unwrap();
+        }
+        
+        assert_eq!(frame.add_message(&msg).is_err(), true);
     }
 
     #[test]

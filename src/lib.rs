@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate serde_derive;
+
 mod parity;
 mod bch_calculator;
 mod fourbit_checksum;

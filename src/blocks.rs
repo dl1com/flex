@@ -165,7 +165,8 @@ mod tests {
 
     #[test]
     fn test_get_addr_cws() {
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("test")).unwrap();
         let msgs = vec![msg];
@@ -176,7 +177,8 @@ mod tests {
 
     #[test]
     fn test_get_vector_and_content_cws() {
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("test")).unwrap();
         let msgs = vec![msg];

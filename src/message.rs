@@ -1,4 +1,5 @@
 
+#[derive(Debug, Clone, Deserialize)]
 pub enum MessageType {
     AlphaNum
 }
@@ -9,24 +10,32 @@ pub enum AddressType {
     Invalid
 }
 
+#[derive(Debug, Clone, Deserialize)]
 pub struct Message {
+    pub frame: u32,
     msgtype: MessageType,
     pub address: u32,
-    pub data: String
+    pub data: String,    
 }
 
 impl Message {
-    pub fn new(msgtype: MessageType,
+    pub fn new(frame: u32,
+               msgtype: MessageType,
                address: u32,
                data: String) -> Result<Message, &'static str> {
 
         if Message::get_address_type(address) == AddressType::Invalid {
             return Err("Invalid address");
         }
-        return Ok(Message{msgtype: msgtype,
+
+        if frame > 128 {
+            return Err("Invalid Frame number");
+        }
+
+        return Ok(Message{frame: frame,
+                          msgtype: msgtype,
                           address: address,
-                          data: data
-        });
+                          data: data});
     }
 
     pub fn get_num_codewords(&self) -> Result<usize, &'static str> {
@@ -68,7 +77,8 @@ mod tests {
 
     #[test]
     fn test_message() {
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("test"));
         assert_eq!(msg.is_err(), false);
@@ -76,7 +86,8 @@ mod tests {
 
     #[test]
     fn test_message_invalid_address() {
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x1,
                                String::from("test"));
         assert_eq!(msg.is_err(), true);
@@ -89,15 +100,17 @@ mod tests {
 
     #[test]
     fn test_get_content_cw_size() {
-        let msg = Message::new(MessageType::AlphaNum,
-                        0x8001,
-                        String::from("abcde")).unwrap();
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
+                               0x8001,
+                               String::from("abcde")).unwrap();
         assert_eq!(msg.get_content_cw_size(), 3);
     }
 
     #[test]
     fn test_message_get_size_2() {
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("ab")).unwrap();
         assert_eq!(msg.get_num_codewords().unwrap(), 4);
@@ -105,7 +118,8 @@ mod tests {
 
     #[test]
     fn test_message_get_size_4() {
-        let msg = Message::new(MessageType::AlphaNum,
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
                                0x8001,
                                String::from("abcd")).unwrap();
         assert_eq!(msg.get_num_codewords().unwrap(), 5);
