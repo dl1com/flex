@@ -78,7 +78,7 @@ impl Frame {
     }
 
     pub fn add_message(&mut self, msg: &Message) -> Result<usize,&'static str> {
-        let size_new_msg = msg.get_num_codewords().unwrap();
+        let size_new_msg = msg.get_num_of_message_codewords().unwrap();
         let sum = size_new_msg + self.num_cws;
 
         if sum < MAX_CODEWORDS_PER_BLOCK_1600 {

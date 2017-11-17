@@ -80,7 +80,7 @@ impl Blocks {
     fn get_addr_cws(msgs: &Vec<Message>) -> Vec<u32> {
         let mut addr_cws = Vec::new();
         for msg in msgs {
-            let address = CWAddressShort::new(msg.address).unwrap();
+            let address = CWAddressShort::new(msg.capcode).unwrap();
             addr_cws.push(address.get_codeword());
         }
         return addr_cws;
@@ -97,7 +97,7 @@ impl Blocks {
         for msg in msgs {
             let content_start = biw_addr_vector_cws_size
                                 + content_cws.len();
-            let content_words = msg.get_content_cw_size() as u32;
+            let content_words = msg.get_num_of_content_codewords() as u32;
 
             let vector = CWVectorAlpha::new(content_start as u32,
                                             content_words).unwrap();
@@ -167,7 +167,7 @@ mod tests {
     fn test_get_addr_cws() {
         let msg = Message::new(0,
                                MessageType::AlphaNum,
-                               0x8001,
+                               0x0001,
                                String::from("test")).unwrap();
         let msgs = vec![msg];
         let cws = Blocks::get_addr_cws(&msgs);

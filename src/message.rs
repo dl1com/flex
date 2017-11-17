@@ -5,8 +5,8 @@ pub enum MessageType {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum AddressType {
-    Short,
+pub enum CapcodeType {
+    ShortAddress,
     Invalid
 }
 
@@ -14,18 +14,18 @@ pub enum AddressType {
 pub struct Message {
     pub frame: u32,
     msgtype: MessageType,
-    pub address: u32,
+    pub capcode: u32,
     pub data: String,    
 }
 
 impl Message {
     pub fn new(frame: u32,
                msgtype: MessageType,
-               address: u32,
+               capcode: u32,
                data: String) -> Result<Message, &'static str> {
 
-        if Message::get_address_type(address) == AddressType::Invalid {
-            return Err("Invalid address");
+        if Message::get_capcode_type(capcode) == CapcodeType::Invalid {
+            return Err("Invalid CAPCODE");
         }
 
         if frame > 128 {
@@ -34,25 +34,25 @@ impl Message {
 
         return Ok(Message{frame: frame,
                           msgtype: msgtype,
-                          address: address,
+                          capcode: capcode,
                           data: data});
     }
 
-    pub fn get_num_codewords(&self) -> Result<usize, &'static str> {
+    pub fn get_num_of_message_codewords(&self) -> Result<usize, &'static str> {
         let mut size = 0;
-        match Message::get_address_type(self.address) {
-            AddressType::Short => size += 2,  // Address Word + Vector Word
-            AddressType::Invalid => return Err("Invalid address given")
+        match Message::get_capcode_type(self.capcode) {
+            CapcodeType::ShortAddress => size += 2,  // Address Word + Vector Word
+            CapcodeType::Invalid => return Err("Invalid CAPCODE given")
         }
 
         match self.msgtype {
-            MessageType::AlphaNum => size += self.get_content_cw_size()
+            MessageType::AlphaNum => size += self.get_num_of_content_codewords()
         }
 
         return Ok(size);
     }
 
-    pub fn get_content_cw_size(&self) -> usize {
+    pub fn get_num_of_content_codewords(&self) -> usize {
         let mut size: usize = 0;
         size += 2;                      // Message Header and Signature
         size += (self.data.len()-2) / 3;   // 3 chars per Content codeword
@@ -62,11 +62,11 @@ impl Message {
         return size;
     }
 
-    fn get_address_type(address: u32) -> AddressType {
-        if address >= 0x8001 && address <= 0x1F27FF {
-            return AddressType::Short;
+    fn get_capcode_type(capcode: u32) -> CapcodeType {
+        if capcode >= 0x0001 && capcode <= 0x1EA7FF {
+            return CapcodeType::ShortAddress;
         }
-        return AddressType::Invalid;
+        return CapcodeType::Invalid;
     }
 }
 
@@ -76,52 +76,62 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_message() {
+    fn test_message_when_typical() {
         let msg = Message::new(0,
                                MessageType::AlphaNum,
-                               0x8001,
+                               0x0001,
                                String::from("test"));
         assert_eq!(msg.is_err(), false);
     }
 
     #[test]
-    fn test_message_invalid_address() {
+    fn test_message_when_invalid_capcode() {
         let msg = Message::new(0,
                                MessageType::AlphaNum,
-                               0x1,
+                               0x0000,
                                String::from("test"));
         assert_eq!(msg.is_err(), true);
     }
 
     #[test]
-    fn test_message_address_type() {        
-        assert_eq!(Message::get_address_type(0x8001), AddressType::Short);
+    fn test_message_get_capcode_type_when_short_address() {        
+        assert_eq!(Message::get_capcode_type(0x8001), CapcodeType::ShortAddress);
+    }
+    
+    #[test]
+    fn test_message_get_capcode_type_when_zero_address() {        
+        assert_eq!(Message::get_capcode_type(0x0), CapcodeType::Invalid);
     }
 
     #[test]
-    fn test_get_content_cw_size() {
+    fn test_message_get_capcode_type_when_invalid_address() {        
+        assert_eq!(Message::get_capcode_type(0x1EB000), CapcodeType::Invalid);
+    }
+
+    #[test]
+    fn test_message_get_num_of_content_codewords_when_five_character() {
         let msg = Message::new(0,
                                MessageType::AlphaNum,
                                0x8001,
                                String::from("abcde")).unwrap();
-        assert_eq!(msg.get_content_cw_size(), 3);
+        assert_eq!(msg.get_num_of_content_codewords(), 3);
     }
 
     #[test]
-    fn test_message_get_size_2() {
+    fn test_message_get_num_of_message_codewords_when_two_character() {
         let msg = Message::new(0,
                                MessageType::AlphaNum,
                                0x8001,
                                String::from("ab")).unwrap();
-        assert_eq!(msg.get_num_codewords().unwrap(), 4);
+        assert_eq!(msg.get_num_of_message_codewords().unwrap(), 4);
     }
 
     #[test]
-    fn test_message_get_size_4() {
+    fn test_message_get_num_of_message_codewords_when_four_character() {
         let msg = Message::new(0,
                                MessageType::AlphaNum,
                                0x8001,
                                String::from("abcd")).unwrap();
-        assert_eq!(msg.get_num_codewords().unwrap(), 5);
+        assert_eq!(msg.get_num_of_message_codewords().unwrap(), 5);
     }
 }
