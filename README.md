@@ -2,10 +2,10 @@
 
 [![Build Status](https://travis-ci.org/chris007de/flex.svg?branch=master)](https://travis-ci.org/chris007de/flex/builds)
 
-This is an Open-Source implementation of the FLEX paging protocol encoder.
+This is an Open-Source implementation of the FLEX paging protocol encoder by DL1COM and DC1MIL.
 
-The coder is based on US patent US55555183 and intended for non-commercial use only.
-All patent-related information is property of their respective owners, if applicable.
+This coder is based on US patent US55555183 and intended for non-commercial use only.
+All patent-related information is property of their respective owners, if still applicable.
 
 ## Implementation
 
