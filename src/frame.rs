@@ -79,14 +79,17 @@ impl Frame {
 
     pub fn add_message(&mut self, msg: &Message) -> Result<usize,&'static str> {
         let size_new_msg = msg.get_num_of_message_codewords().unwrap();
-        let sum = size_new_msg + self.num_cws;
 
-        if sum < MAX_CODEWORDS_PER_BLOCK_1600 {
+        if size_new_msg < self.space_left() {
             self.msgs.push(msg.clone());
-            self.num_cws = sum;
-            return Ok(sum);
+            self.num_cws += size_new_msg;
+            return Ok(self.num_cws);
         }
         return Err("could not add message to frame");        
+    }
+
+    pub fn space_left(&self) -> usize {
+        return MAX_CODEWORDS_PER_BLOCK_1600 - self.num_cws;
     }
 
     pub fn calculate_cycle_and_frame(minutes: u32, seconds: u32) -> (u32,u32) {
