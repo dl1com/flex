@@ -5,35 +5,29 @@ use fourbit_checksum::apply_4bit_checksum;
 pub struct BIW4 {
     hour: u32,
     minute: u32,
-    second: u32
+    second: u32,
 }
 
 impl BIW4 {
-    pub fn new (hour: u32,
-            minute: u32,
-            second: u32) -> Result<BIW4, &'static str>
-    {
-        if !(BIW4::check_minute(minute)
-             && BIW4::check_hour(hour))
-        {
+    pub fn new(hour: u32, minute: u32, second: u32) -> Result<BIW4, &'static str> {
+        if !(BIW4::check_minute(minute) && BIW4::check_hour(hour)) {
             Err("BIW3: Invalid time given")
-        }
-        else
-        {
+        } else {
             let biw4 = BIW4 {
                 hour: hour,
                 minute: minute,
-                second: (second as f32/7.5) as u32 & 0x7};
+                second: (second as f32 / 7.5) as u32 & 0x7,
+            };
             Ok(biw4)
         }
     }
 
     fn check_minute(minute: u32) -> bool {
-        return minute <= 59
+        return minute <= 59;
     }
 
     fn check_hour(hour: u32) -> bool {
-        return hour <= 23
+        return hour <= 23;
     }
 }
 

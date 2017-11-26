@@ -4,18 +4,16 @@ use apply_bch_and_parity::apply_bch_and_parity;
 const SHORT_ADDRESS_CAPCODE_OFFSET: u32 = 0x8000;
 
 pub struct CWAddressShort {
-    capcode: u32
+    capcode: u32,
 }
 
 impl CWAddressShort {
     pub fn new(capcode: u32) -> Result<CWAddressShort, &'static str> {
-        if capcode >= 0x0001 && capcode <= 0x1EA7FF 
-            {
-                Ok(CWAddressShort{capcode: capcode})
-            }
-        else {
-                Err("CAPCODE for short address out of range")
-            }
+        if capcode >= 0x0001 && capcode <= 0x1EA7FF {
+            Ok(CWAddressShort { capcode: capcode })
+        } else {
+            Err("CAPCODE for short address out of range")
+        }
     }
 }
 

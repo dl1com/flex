@@ -1,12 +1,11 @@
-pub fn apply_bch_checksum(codeword: u32) -> u32 
-{
+pub fn apply_bch_checksum(codeword: u32) -> u32 {
     let mut crc = codeword;
     for i in 0..21 {
         if (crc & (0x00000001 << i)) != 0 {
             crc ^= 0x4B7 << i;
         }
     }
-    return codeword | crc;    
+    return codeword | crc;
 }
 
 #[cfg(test)]

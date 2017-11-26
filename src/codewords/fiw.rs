@@ -6,28 +6,25 @@ pub struct FIW {
     cycle_number: u32,
     frame_number: u32,
     repeat_paging: u32,
-    low_traffic_flags: u32
+    low_traffic_flags: u32,
 }
 
 impl FIW {
-    pub fn new (cycle_number: u32,
-            frame_number: u32,
-            repeat_paging: u32,
-            low_traffic_flags: u32) -> Result<FIW,&'static str>
-    {
+    pub fn new(
+        cycle_number: u32,
+        frame_number: u32,
+        repeat_paging: u32,
+        low_traffic_flags: u32,
+    ) -> Result<FIW, &'static str> {
         // Currently handling only low_traffic_flag for 1600 bps
-        if cycle_number <= 14
-            && frame_number <= 127
-            && repeat_paging <= 1
-            {
-                Ok(FIW{
-                    cycle_number: cycle_number,
-                    frame_number: frame_number,
-                    repeat_paging: repeat_paging,
-                    low_traffic_flags: low_traffic_flags
+        if cycle_number <= 14 && frame_number <= 127 && repeat_paging <= 1 {
+            Ok(FIW {
+                cycle_number: cycle_number,
+                frame_number: frame_number,
+                repeat_paging: repeat_paging,
+                low_traffic_flags: low_traffic_flags,
             })
-        }
-        else {
+        } else {
             Err("Frame Information Word: Parameter out of range.")
         }
     }

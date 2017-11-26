@@ -5,40 +5,33 @@ use fourbit_checksum::apply_4bit_checksum;
 pub struct BIW3 {
     year: u32,
     month: u32,
-    day: u32
+    day: u32,
 }
 
 impl BIW3 {
-    pub fn new (day: u32,
-            month: u32,
-            year: u32) -> Result<BIW3, &'static str>
-    {
-        if !(BIW3::check_day(day)
-             && BIW3::check_month(month)
-             && BIW3::check_year(year))
-        {
+    pub fn new(day: u32, month: u32, year: u32) -> Result<BIW3, &'static str> {
+        if !(BIW3::check_day(day) && BIW3::check_month(month) && BIW3::check_year(year)) {
             Err("BIW3: Invalid date given")
-        }
-        else
-        {
+        } else {
             let biw3 = BIW3 {
                 year: year - 1994,
                 month: month,
-                day: day};
+                day: day,
+            };
             Ok(biw3)
         }
     }
 
     fn check_day(day: u32) -> bool {
-        return day >= 1 && day <= 31
+        return day >= 1 && day <= 31;
     }
 
     fn check_month(month: u32) -> bool {
-        return month >= 1 && month <= 12
+        return month >= 1 && month <= 12;
     }
 
     fn check_year(year: u32) -> bool {
-        return year >= 1994 && year <= 2025
+        return year >= 1994 && year <= 2025;
     }
 }
 

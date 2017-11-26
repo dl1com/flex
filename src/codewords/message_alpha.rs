@@ -8,38 +8,36 @@ use apply_bch_and_parity::apply_bch_and_parity;
 pub struct CWMessageAlpha {
     header: CWMessageAlphaHeader,
     signature: CWMessageAlphaSignature,
-    content: Vec<CWMessageAlphaContent>
+    content: Vec<CWMessageAlphaContent>,
 }
 
 impl CWMessageAlpha {
-    pub fn new (message_number: u32,
-            chars: &[u8]) -> Result<CWMessageAlpha, &'static str>
-    {
+    pub fn new(message_number: u32, chars: &[u8]) -> Result<CWMessageAlpha, &'static str> {
         // Not supported for now:
         // - Fragmented messages
         // - Message retrieval flag
         // - Mail Drop flag
 
-        let header = CWMessageAlphaHeader::new(0,
-                                               3,
-                                               message_number,
-                                               0,
-                                               0).unwrap();
+        let header = CWMessageAlphaHeader::new(0, 3, message_number, 0, 0).unwrap();
         let mut chars_filled = chars.to_vec();
         CWMessageAlpha::fill_up_chars(&mut chars_filled);
         let signature = CWMessageAlphaSignature::new(
-                            CWMessageAlpha::calculate_signature(chars),
-                            &chars_filled[0..2]).unwrap();
-        
+            CWMessageAlpha::calculate_signature(chars),
+            &chars_filled[0..2],
+        ).unwrap();
+
         let mut content = Vec::new();
-        for i in 0..((chars_filled.len()-2) / 3) {        
-           content.push(CWMessageAlphaContent::new(
-                        &chars_filled[2+i*3..5+i*3]).unwrap());
+        for i in 0..((chars_filled.len() - 2) / 3) {
+            content.push(
+                CWMessageAlphaContent::new(&chars_filled[2 + i * 3..5 + i * 3]).unwrap(),
+            );
         }
-        
-        return Ok(CWMessageAlpha{header: header,
-                                 signature: signature,
-                                 content: content});
+
+        return Ok(CWMessageAlpha {
+            header: header,
+            signature: signature,
+            content: content,
+        });
     }
 
     fn fill_up_chars(chars: &mut Vec<u8>) {
@@ -127,21 +125,21 @@ mod tests {
     fn test_message_alpha_get_codewords() {
         let text_vec = Vec::from("Gurkensalat");
         let msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
-        assert_eq!(msg_alpha.get_codewords()[0] & 0x1FFA00,0x02F800);
-        assert_eq!(msg_alpha.get_codewords()[0] & 0x3FF, 0x14F );
-        assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80,0x1D6380); // Gu
-        assert_eq!(msg_alpha.get_codewords()[2] & 0x1FFFFF,0x1975F2); // rke
-        assert_eq!(msg_alpha.get_codewords()[3] & 0x1FFFFF,0x1879EE); // nsa
-        assert_eq!(msg_alpha.get_codewords()[4] & 0x1FFFFF,0x1D30EC); // lat
+        assert_eq!(msg_alpha.get_codewords()[0] & 0x1FFA00, 0x02F800);
+        assert_eq!(msg_alpha.get_codewords()[0] & 0x3FF, 0x14F);
+        assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80, 0x1D6380); // Gu
+        assert_eq!(msg_alpha.get_codewords()[2] & 0x1FFFFF, 0x1975F2); // rke
+        assert_eq!(msg_alpha.get_codewords()[3] & 0x1FFFFF, 0x1879EE); // nsa
+        assert_eq!(msg_alpha.get_codewords()[4] & 0x1FFFFF, 0x1D30EC); // lat
     }
 
     #[test]
     fn test_message_alpha_get_codewords_fillup() {
         let text_vec = Vec::from("Gurken");
         let msg_alpha = CWMessageAlpha::new(23, &text_vec).unwrap();
-        assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80,0x1D6380); // Gu
-        assert_eq!(msg_alpha.get_codewords()[2] & 0x1FFFFF,0x1975F2); // rke
-        assert_eq!(msg_alpha.get_codewords()[3] & 0x1FFFFF,0x00C1EE); // nETXETX
+        assert_eq!(msg_alpha.get_codewords()[1] & 0x1FFF80, 0x1D6380); // Gu
+        assert_eq!(msg_alpha.get_codewords()[2] & 0x1FFFFF, 0x1975F2); // rke
+        assert_eq!(msg_alpha.get_codewords()[3] & 0x1FFFFF, 0x00C1EE); // nETXETX
     }
 
     #[test]

@@ -4,20 +4,17 @@ use fourbit_checksum::apply_4bit_checksum;
 
 pub struct CWVectorAlpha {
     message_start: u32,
-    message_words: u32
+    message_words: u32,
 }
 
 impl CWVectorAlpha {
-    pub fn new(message_start: u32,
-               message_words: u32) -> Result<CWVectorAlpha, &'static str> {
-        if message_start >= 3 && message_start <= 87
-            && message_words >= 1 && message_words <= 85 {
-            Ok(CWVectorAlpha{
+    pub fn new(message_start: u32, message_words: u32) -> Result<CWVectorAlpha, &'static str> {
+        if message_start >= 3 && message_start <= 87 && message_words >= 1 && message_words <= 85 {
+            Ok(CWVectorAlpha {
                 message_start: message_start,
-                message_words: message_words
+                message_words: message_words,
             })
-        }
-        else {
+        } else {
             Err("CWVectoralpha: Parameters out of range.")
         }
     }
@@ -26,7 +23,7 @@ impl CWVectorAlpha {
 impl Codeword for CWVectorAlpha {
     fn get_codeword(&self) -> u32 {
         let mut cw: u32 = 0x0;
-        cw |= 0x5 << 4;  // Type: Alpha Message Vector
+        cw |= 0x5 << 4; // Type: Alpha Message Vector
         cw |= self.message_start << 7;
         cw |= self.message_words << 14;
         cw = apply_4bit_checksum(cw);

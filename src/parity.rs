@@ -7,15 +7,14 @@ pub fn check_and_set_parity(codeword: &mut u32) -> bool {
     let odd = (ones % 2) != 0;
     if odd {
         set_parity(codeword);
-    }
-    else {
+    } else {
         clear_parity(codeword);
     }
 
     return odd;
 }
 
-fn count_ones(codeword: u32) -> u32{
+fn count_ones(codeword: u32) -> u32 {
     let mut ones = 0;
     for i in 0..31 {
         let mask = 1 << i;

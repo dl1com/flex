@@ -4,18 +4,15 @@ use apply_bch_and_parity::apply_bch_and_parity;
 use std::str;
 
 pub struct CWMessageAlphaContent {
-    chars: Vec<u8>
+    chars: Vec<u8>,
 }
 
 impl CWMessageAlphaContent {
-    pub fn new (chars: &[u8]) -> Result<CWMessageAlphaContent, &'static str>
-    {
+    pub fn new(chars: &[u8]) -> Result<CWMessageAlphaContent, &'static str> {
         if chars.len() != 3 {
             return Err("Alphanumeric Message Content: 3 chars required.");
         }
-        return Ok(CWMessageAlphaContent{
-            chars: chars.to_vec()
-        });
+        return Ok(CWMessageAlphaContent { chars: chars.to_vec() });
     }
 }
 

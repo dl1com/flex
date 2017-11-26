@@ -1,11 +1,10 @@
-pub fn apply_4bit_checksum(codeword: u32) -> u32
-{
+pub fn apply_4bit_checksum(codeword: u32) -> u32 {
     let mut sum: u32 = 0x0;
-    sum += (codeword>>4) & 0xF;
-    sum += (codeword>>8) & 0xF;
-    sum += (codeword>>12) & 0xF;
-    sum += (codeword>>16) & 0xF;
-    sum += (codeword>>20) & 0x1;
+    sum += (codeword >> 4) & 0xF;
+    sum += (codeword >> 8) & 0xF;
+    sum += (codeword >> 12) & 0xF;
+    sum += (codeword >> 16) & 0xF;
+    sum += (codeword >> 20) & 0x1;
     sum ^= 0xF;
     sum &= 0xF;
     return codeword | sum;

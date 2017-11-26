@@ -7,22 +7,24 @@ pub struct BIW1 {
     end_of_block: u32,
     vector_field_start: u32,
     carry_on: u32,
-    frame_id_collapse_mark: u32
+    frame_id_collapse_mark: u32,
 }
 
 impl BIW1 {
-    pub fn new (priority_addr: u32,
-            end_of_block: u32,
-            vector_field_start: u32,
-            carry_on: u32,
-            frame_id_collapse_mark: u32) -> Result<BIW1,&'static str>
-    {
+    pub fn new(
+        priority_addr: u32,
+        end_of_block: u32,
+        vector_field_start: u32,
+        carry_on: u32,
+        frame_id_collapse_mark: u32,
+    ) -> Result<BIW1, &'static str> {
         let biw1 = BIW1 {
             priority_addr: priority_addr & 0xF,
             end_of_block: end_of_block & 0x3,
             vector_field_start: vector_field_start & 0x3F,
             carry_on: carry_on & 0x3,
-            frame_id_collapse_mark: frame_id_collapse_mark & 0x7};
+            frame_id_collapse_mark: frame_id_collapse_mark & 0x7,
+        };
         Ok(biw1)
     }
 }
@@ -47,13 +49,13 @@ mod tests {
 
     #[test]
     fn test_codeword_biw1() {
-        let biw1 = BIW1::new(10,2,60,1,6).unwrap();
+        let biw1 = BIW1::new(10, 2, 60, 1, 6).unwrap();
         assert_eq!(biw1.get_codeword() & 0x1FFFF0, 0x19F2A0);
     }
 
     #[test]
     fn test_codeword_biw1_crc() {
-        let biw1 = BIW1::new(0,0,2,0,0).unwrap();
+        let biw1 = BIW1::new(0, 0, 2, 0, 0).unwrap();
         assert_eq!(biw1.get_codeword(), 0x19400807);
     }
 }
