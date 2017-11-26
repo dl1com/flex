@@ -42,7 +42,7 @@ Options:
 
 ## JSON Message Format
 
-```
+```JSON
 [  
     {  
         "frame":0,
@@ -65,7 +65,7 @@ Options:
 
 Generate only the frames for the messages contained in the JSON file.
 
-```
+```Shell
 flex --single -i messages.json -o messages.bin
 ```
 
@@ -74,7 +74,7 @@ flex --single -i messages.json -o messages.bin
 
 Generate a full hour of FLEX frames, containing the messages from the JSON file in the respective frames.
 
-```
+```Shell
 flex --hour -i messages.json -o messages.bin
 ```
 
@@ -85,7 +85,7 @@ There could be a GNU Radio UDP Source waiting to do modulate and send the frames
 
 Input for frames could be done using a named pipe, e.g.:
 
-```
+```Shell
 mkfifo input.pipe
 flex --continuous -i input.pipe
 
@@ -95,7 +95,7 @@ echo '[{"msgtype":"AlphaNum","capcode":123456,"data":"test","frame":1}]' > input
 
 ### Build instructions
 
-```
+```Shell
 cargo build
 ```
 
@@ -109,3 +109,23 @@ cargo build
     multimon-ng -t raw -a FLEX -v 3 dump.raw
     ```
 
+## Usage of flexencoder crate
+
+```Rust
+// Create a message
+let msg = Message::new(0, MessageType::AlphaNum, 0x123456, String::from("test")).unwrap();
+
+// Create a frame
+let mut frame = Frame::new(cycle_nr, frame_nr).unwrap();
+
+// Check if there is still space left in frame
+if msg.get_num_of_message_codewords().unwrap() > frame.space_left() {
+    panic!("No space left in frame.");
+    }
+
+// Add message to frame
+frame.add_message(&msg).unwrap();
+
+// Get frame bytes to send them
+let bytes = frame.get_bytes();
+```
