@@ -30,12 +30,14 @@ Currently, it is possible to generate a FLEX bytestream from a JSON input file.
 flex --MODE -i INPUT -o OUTPUT
 
 Options:
+    Modes:
+    --single        generate only frames for the messages given
+    --hour          generate a full hour of frames
+    --continuous    generate frames continuously to UDP
+
     -i, --input FILE.json
                         set input file (JSON)
     -o, --output FILE   set output file (FLEX bytestream)
-        --single        generate only frames for the messages given
-        --hour          generate a full hour of frames
-    -h, --help          print this help menu
 ```
 
 ## JSON Message Format
@@ -75,6 +77,21 @@ Generate a full hour of FLEX frames, containing the messages from the JSON file 
 ```
 flex --hour -i messages.json -o messages.bin
 ```
+
+#### Operation Mode: continuously
+
+Generates frames permanently, each 1.875 seconds and sends them to *127.0.0.1:51337*.
+There could be a GNU Radio UDP Source waiting to do modulate and send the frames.
+
+Input for frames could be done using a named pipe, e.g.:
+
+```
+mkfifo input.pipe
+flex --continuous -i input.pipe
+
+echo '[{"msgtype":"AlphaNum","capcode":123456,"data":"test","frame":1}]' > input.fifo
+```
+
 
 ### Build instructions
 
