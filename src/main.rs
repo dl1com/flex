@@ -48,7 +48,7 @@ fn parse_arguments(args: &Vec<String>) -> Result<(String,String,OperationMode),&
     opts.optopt("o", "output","set output file (FLEX bytestream)", "FILE");
     opts.optflag("", "single","MODE: generate only frames for the messages given");
     opts.optflag("", "hour","MODE: generate a full hour of frames");
-    opts.optflag("", "continuous","MODE: permanently generating frames");
+    opts.optflag("", "continuous","MODE: generate frames continuously to UDP");
     opts.optflag("h", "help", "print this help menu");    
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => { m }
@@ -138,7 +138,7 @@ fn frames_hton(frames: &Vec<Frame>) -> Vec<u8> {
     return reversed_bytes;
 }
 
-fn generate_continuousely(in_file: String) {
+fn generate_continuously(in_file: String) {
     let share_msg_input_0 = Arc::new(Mutex::new(Vec::new()));
     let share_msg_input_1 = share_msg_input_0.clone();
 
@@ -193,6 +193,6 @@ fn main() {
     match mode {
         OperationMode::Single => generate_single_frames(in_file, out_file),
         OperationMode::Hour => generate_hour(in_file, out_file),
-        OperationMode::Continuous => generate_continuousely(in_file),
+        OperationMode::Continuous => generate_continuously(in_file),
     }
 }
