@@ -129,3 +129,5 @@ frame.add_message(&msg).unwrap();
 // Get frame bytes to send them
 let bytes = frame.get_bytes();
 ```
+
+FLEX®, is a registered trademark of Motorola®, Incorporated.
