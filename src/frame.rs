@@ -4,38 +4,41 @@ use blocks::Blocks;
 use codewords::codeword::Codeword;
 use message::Message;
 
-const PATTERN_BS1: u32 = 0x55555555;
-const PATTERN_A1: u32 = 0x9C9ACF1E; // A1: 1600 / 2 FM
-const PATTERN_B: u16 = 0xAAAA;
-const PATTERN_BS2: u8 = 0x05;
-const PATTERN_C: u16 = 0x21B7;
+const PATTERN_BS1   : u32 = 0x55555555;
+const PATTERN_A1    : u32 = 0x9C9ACF1E; // A1: 1600 / 2 FM
+const PATTERN_B     : u16 = 0xAAAA;
+const PATTERN_BS2   : u8  = 0x05;
+const PATTERN_C     : u16 = 0x21B7;
 
-const MAX_CODEWORDS_PER_BLOCK_1600: usize = 88;
+const MAX_CODEWORDS_PER_BLOCK_1600 : usize = 88;
 
 pub struct Frame {
     fiw: FIW,
     num_cws: usize,
     send_time: bool,
-    msgs: Vec<Message>,
+    msgs: Vec<Message>
 }
 
 impl Frame {
-    pub fn new(cycle_number: u32, frame_number: u32) -> Result<Frame, &'static str> {
-        let fiw = FIW::new(cycle_number, frame_number, 0, 0x00).unwrap();
+    pub fn new (cycle_number: u32,
+            frame_number: u32) -> Result<Frame,&'static str>
+    {
+        let fiw = FIW::new(cycle_number,
+                           frame_number,
+                           0,
+                           0x00)?;
 
         let mut num_cws = 1; // BIW1
         let mut send_time = false;
         if frame_number == 0 {
-            send_time = true; // send BIW2, 3 and 4
+            send_time = true;  // send BIW2, 3 and 4
             num_cws += 3;
         }
 
-        return Ok(Frame {
-            fiw: fiw,
-            num_cws: num_cws,
-            send_time,
-            msgs: Vec::new(),
-        });
+        return Ok(Frame{fiw: fiw,
+                        num_cws: num_cws,
+                        send_time,
+                        msgs: Vec::new()});
     }
 
     fn get_sync1() -> Vec<u8> {
@@ -67,32 +70,32 @@ impl Frame {
         return header;
     }
 
-    pub fn get_bytes(&self) -> Vec<u8> {
+    pub fn get_bytes(&self) -> Vec<u8> {        
         let mut bytes = Vec::new();
         bytes.extend_from_slice(&self.get_header());
         bytes.extend_from_slice(&Blocks::get_bytes(&self.msgs, self.send_time));
         return bytes;
     }
 
-    pub fn add_message(&mut self, msg: &Message) -> Result<usize, &'static str> {
-        let size_new_msg = msg.get_num_of_message_codewords().unwrap();
+    pub fn add_message(&mut self, msg: &Message) -> Result<usize,&'static str> {
+        let size_new_msg = msg.get_num_of_message_codewords()?;
 
         if size_new_msg < self.space_left() {
             self.msgs.push(msg.clone());
             self.num_cws += size_new_msg;
             return Ok(self.num_cws);
         }
-        return Err("could not add message to frame");
+        return Err("could not add message to frame");        
     }
 
     pub fn space_left(&self) -> usize {
         return MAX_CODEWORDS_PER_BLOCK_1600 - self.num_cws;
     }
 
-    pub fn calculate_cycle_and_frame(minutes: u32, seconds: u32) -> (u32, u32) {
+    pub fn calculate_cycle_and_frame(minutes: u32, seconds: u32) -> (u32,u32) {
         let cycle = minutes / 4;
         let frame = ((minutes % 4) * 60 + seconds) as f64 / 1.875;
-        return (cycle, frame as u32);
+        return (cycle,frame as u32)
     }
 
     fn u32_to_4_u8(var: u32) -> [u8; 4] {
@@ -120,15 +123,21 @@ mod tests {
     #[test]
     fn test_frame_add_message() {
         let mut frame = Frame::new(0, 1).unwrap();
-        let msg = Message::new(0, MessageType::AlphaNum, 0x8001, String::from("test")).unwrap();
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
+                               0x8001,
+                               String::from("test")).unwrap();
         assert_eq!(frame.add_message(&msg).unwrap(), 6);
     }
 
     #[test]
     fn test_frame_add_message_86() {
         let mut frame = Frame::new(0, 1).unwrap();
-        let msg = Message::new(0, MessageType::AlphaNum, 0x8001, String::from("test")).unwrap();
-        for _ in 0..16 {
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
+                               0x8001,
+                               String::from("test")).unwrap();
+        for _ in 0..16 { 
             frame.add_message(&msg).unwrap();
         }
 
@@ -138,92 +147,59 @@ mod tests {
     #[test]
     fn test_frame_add_message_91() {
         let mut frame = Frame::new(0, 1).unwrap();
-        let msg = Message::new(0, MessageType::AlphaNum, 0x8001, String::from("test")).unwrap();
-        for _ in 0..17 {
+        let msg = Message::new(0,
+                               MessageType::AlphaNum,
+                               0x8001,
+                               String::from("test")).unwrap();
+        for _ in 0..17 { 
             frame.add_message(&msg).unwrap();
         }
-
+        
         assert_eq!(frame.add_message(&msg).is_err(), true);
     }
 
     #[test]
     fn test_frame_get_header() {
         let frame = Frame::new(3, 107).unwrap();
-        assert_eq!(
-            frame.get_header(),
-            [
-                0x55,
-                0x55,
-                0x55,
-                0x55,
-                0x1E,
-                0xCF,
-                0x9A,
-                0x9C, // sync1
-                0xAA,
-                0xAA,
-                0xE1,
-                0x30,
-                0x65,
-                0x63,
-                0x3B,
-                0x6B,
-                0xA0,
-                0xE4, // FIW
-                0x75,
-                0x1B,
-                0xA2,
-                0x48,
-                0xDE,
-            ]
-        ); // Sync2
+        assert_eq!(frame.get_header(), 
+                   [0x55, 0x55, 0x55, 0x55, 0x1E, 0xCF, 0x9A, 0x9C, // sync1
+                   0xAA, 0xAA, 0xE1, 0x30, 0x65, 0x63,
+                   0x3B, 0x6B, 0xA0, 0xE4,                          // FIW
+                   0x75, 0x1B, 0xA2, 0x48, 0xDE]);                  // Sync2
     }
 
     #[test]
     fn test_get_sync1() {
-        assert_eq!(
-            Frame::get_sync1(),
-            [
-                0x55,
-                0x55,
-                0x55,
-                0x55,
-                0x1E,
-                0xCF,
-                0x9A,
-                0x9C,
-                0xAA,
-                0xAA,
-                0xE1,
-                0x30,
-                0x65,
-                0x63,
-            ]
-        );
+        assert_eq!(Frame::get_sync1(),
+                   [0x55, 0x55, 0x55, 0x55, 0x1E, 0xCF, 0x9A, 0x9C, 
+                   0xAA, 0xAA, 0xE1, 0x30, 0x65, 0x63]);
     }
 
     #[test]
     fn test_get_sync2() {
-        assert_eq!(Frame::get_sync2(), [0x75, 0x1B, 0xA2, 0x48, 0xDE]);
+        assert_eq!(Frame::get_sync2(),
+                   [0x75, 0x1B, 0xA2, 0x48, 0xDE]);
     }
 
     #[test]
     fn test_u32_to_4_u8() {
-        assert_eq!(Frame::u32_to_4_u8(0x12345678), [0x78, 0x56, 0x34, 0x12]);
+        assert_eq!(Frame::u32_to_4_u8(0x12345678),
+                   [0x78, 0x56, 0x34, 0x12]);
     }
 
     #[test]
     fn test_u16_to_2_u8() {
-        assert_eq!(Frame::u16_to_2_u8(0x1234), [0x34, 0x12]);
+        assert_eq!(Frame::u16_to_2_u8(0x1234),
+                   [0x34, 0x12]);
     }
 
     #[test]
     fn test_calculate_cycle_and_frame_lowest() {
-        assert_eq!(Frame::calculate_cycle_and_frame(0, 0), (0, 0));
+        assert_eq!(Frame::calculate_cycle_and_frame(0, 0), (0,0));
     }
 
     #[test]
     fn test_calculate_cycle_and_frame_highest() {
-        assert_eq!(Frame::calculate_cycle_and_frame(59, 59), (14, 127));
+        assert_eq!(Frame::calculate_cycle_and_frame(59, 59), (14,127));
     }
 }

@@ -1,5 +1,5 @@
 use super::codeword::Codeword;
-use apply_bch_and_parity::apply_bch_and_parity;
+use helper::apply_bch_and_parity::apply_bch_and_parity;
 
 const SHORT_ADDRESS_CAPCODE_OFFSET: u32 = 0x8000;
 

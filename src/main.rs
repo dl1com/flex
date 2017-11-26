@@ -5,9 +5,9 @@ use std::sync::{Arc, Mutex};
 extern crate chrono;
 use chrono::prelude::*;
 
-extern crate flex;
-use flex::frame::Frame;
-use flex::message::*;
+extern crate flexencoder;
+use flexencoder::frame::Frame;
+use flexencoder::message::*;
 
 use std::fs::File;
 use std::io::prelude::*;

@@ -1,5 +1,5 @@
 use super::codeword::Codeword;
-use apply_bch_and_parity::apply_bch_and_parity;
+use helper::apply_bch_and_parity::apply_bch_and_parity;
 
 pub struct CWMessageAlphaHeader {
     message_continued_flag: u32,

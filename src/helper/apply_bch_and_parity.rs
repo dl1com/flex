@@ -1,5 +1,5 @@
-use bch_calculator::apply_bch_checksum;
-use parity::check_and_set_parity;
+use super::bch_calculator::apply_bch_checksum;
+use super::parity::check_and_set_parity;
 
 pub fn apply_bch_and_parity(codeword: u32) -> u32 {
     let mut cw = codeword;

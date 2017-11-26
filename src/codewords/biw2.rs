@@ -1,6 +1,6 @@
 use super::codeword::Codeword;
-use apply_bch_and_parity::apply_bch_and_parity;
-use fourbit_checksum::apply_4bit_checksum;
+use helper::apply_bch_and_parity::apply_bch_and_parity;
+use helper::fourbit_checksum::apply_4bit_checksum;
 
 pub struct BIW2 {
     local_id: u32,

@@ -3,6 +3,14 @@ name = "flex"
 version = "0.1.0"
 authors = ["chris <mail@chris007.de>"]
 
+[lib]
+name = "flexencoder"
+path = "src/lib.rs"
+
+[[bin]]
+name = "flex"
+path = "src/main.rs"
+
 [dependencies]
 bit_reverse = "0.1.7"
 getopts = "0.2.15"

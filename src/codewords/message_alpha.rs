@@ -3,7 +3,7 @@ use super::message_alpha_header::CWMessageAlphaHeader;
 use super::message_alpha_signature::CWMessageAlphaSignature;
 use super::message_alpha_content::CWMessageAlphaContent;
 
-use apply_bch_and_parity::apply_bch_and_parity;
+use helper::apply_bch_and_parity::apply_bch_and_parity;
 
 pub struct CWMessageAlpha {
     header: CWMessageAlphaHeader,
