@@ -1,0 +1,14 @@
+[  
+    {  
+        "frame":0,
+        "msgtype":"AlphaNum",
+        "capcode":123123,
+        "data":"test1"        
+    },
+    {  
+        "frame":1,
+        "msgtype":"AlphaNum",
+        "capcode":123124,
+        "data":"test2"
+    }
+]
